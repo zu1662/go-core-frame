@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// InitRouter Router initiazition
 func InitRouter() *gin.Engine {
 	var r *gin.Engine
 
