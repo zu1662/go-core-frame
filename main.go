@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"go-core-frame/pkg/config"
+	"go-core-frame/pkg/logger"
 	"go-core-frame/router"
-	"go-core-frame/tools/config"
 	"go-core-frame/utils"
 	"io/ioutil"
 	"net/http"
@@ -62,5 +63,9 @@ func run() {
 }
 
 func setup() {
+	// 配置初始化
 	config.Setup("./config/settings.yml")
+
+	// 日志初始化
+	logger.Setup()
 }

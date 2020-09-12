@@ -40,4 +40,11 @@ func Setup(path string) {
 		panic("No found settings.application in the configuration")
 	}
 	ApplicationConfig = InitApplication(cfgApplication)
+
+	// 日志配置初始化
+	cfgLogger = viper.Sub("settings.logger")
+	if cfgLogger == nil {
+		panic("No found settings.logger in the configuration")
+	}
+	LoggerConfig = InitLogger(cfgLogger)
 }
