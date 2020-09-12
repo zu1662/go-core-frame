@@ -47,4 +47,11 @@ func Setup(path string) {
 		panic("No found settings.logger in the configuration")
 	}
 	LoggerConfig = InitLogger(cfgLogger)
+
+	// 数据库配置初始化
+	cfgMysql = viper.Sub("settings.mysql")
+	if cfgMysql == nil {
+		panic("No found settings.mysql in the configuration")
+	}
+	MysqlConfig = InitMysql(cfgMysql)
 }

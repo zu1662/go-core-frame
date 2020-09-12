@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go-core-frame/pkg/config"
+	"go-core-frame/pkg/database"
 	"go-core-frame/pkg/logger"
 	"go-core-frame/router"
 	"go-core-frame/utils"
@@ -23,6 +24,8 @@ func main() {
 func run() {
 	// 配置初始化
 	setup()
+
+	// gin 初始化
 	if config.ApplicationConfig.Mode == string(utils.ModeProd) {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -68,4 +71,7 @@ func setup() {
 
 	// 日志初始化
 	logger.Setup()
+
+	// 数据库mysql初始化
+	database.Setup()
 }

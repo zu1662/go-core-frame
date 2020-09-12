@@ -42,7 +42,7 @@ settings:
     # 端口
     port: 3306
     # 数据库
-    dbname: dbname
+    dbname: goadmin
     # 配置信息
     config: charset=utf8&parseTime=True&loc=Local&timeout=1000ms
   redis:

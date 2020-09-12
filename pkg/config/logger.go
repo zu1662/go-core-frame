@@ -13,6 +13,7 @@ type Logger struct {
 	EnabledBus bool
 	EnabledReq bool
 	EnabledJob bool
+	EnabledDB  bool
 }
 
 // InitLogger Logger 结构初始化
@@ -24,5 +25,6 @@ func InitLogger(cfg *viper.Viper) *Logger {
 		EnabledBus: cfg.GetBool("enabledbus"),
 		EnabledReq: cfg.GetBool("enabledreq"),
 		EnabledJob: cfg.GetBool("enabledjob"),
+		EnabledDB:  cfg.GetBool("enableddb"),
 	}
 }
