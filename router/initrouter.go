@@ -2,6 +2,7 @@ package router
 
 import (
 	"go-core-frame/global"
+	"go-core-frame/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +17,9 @@ func InitRouter() *gin.Engine {
 	} else {
 		r = global.GinEngine
 	}
+
+	// 注册中间件
+	middleware.InitMiddleware(r)
 
 	// 注册系统内路由
 	initSysRouter(r)

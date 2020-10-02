@@ -16,5 +16,5 @@ func initSysRouter(r *gin.Engine) {
 func sysBaseRouter(r *gin.RouterGroup) {
 	r.GET("/", system.HelloWorld)
 
-	r.GET("/ping", system.Ping)
+	r.POST("/sysuser/:userId", system.GetSysUser)
 }
