@@ -13,7 +13,7 @@ func GetLocation(ip string) string {
 	if ip == "127.0.0.1" || ip == "localhost" || ip == "::1" {
 		return "内部IP"
 	}
-	resp, err := http.Get("https://restapi.amap.com/v3/ip?ip=" + ip + "&key=3fabc36c20379fbb9300c79b19d5d05e")
+	resp, err := http.Get("https://restapi.amap.com/v3/ip?ip=" + ip + "&key=e0082f9a757fe1ea648ff4e94b085686")
 	if err != nil {
 		panic(err)
 
@@ -34,7 +34,7 @@ func GetLocation(ip string) string {
 	return m["province"] + "-" + m["city"]
 }
 
-// 获取局域网ip地址
+// GetLocaHonst 获取局域网ip地址
 func GetLocaHonst() string {
 	netInterfaces, err := net.Interfaces()
 	if err != nil {

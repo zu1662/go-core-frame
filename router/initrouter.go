@@ -9,20 +9,25 @@ import (
 
 // InitRouter Router initiazition
 func InitRouter() *gin.Engine {
-	var r *gin.Engine
+	var Router *gin.Engine
 
 	// 返回全局唯一gin实例
 	if global.GinEngine == nil {
-		r = gin.New()
+		Router = gin.New()
 	} else {
-		r = global.GinEngine
+		Router = global.GinEngine
 	}
 
 	// 注册中间件
-	middleware.InitMiddleware(r)
+	// 自定义日志处理
+	Router.Use(middleware.SetLogger())
 
-	// 注册系统内路由
-	initSysRouter(r)
+	// 自定义错误处理
+	Router.Use(middleware.CustomError)
 
-	return r
+	// 方便统一添加路由组前缀 多服务器上线使用
+	APIGroup := Router.Group("v1")
+	InitSystemRouter(APIGroup)
+
+	return Router
 }

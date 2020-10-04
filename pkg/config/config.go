@@ -14,7 +14,7 @@ var cfgApplication *viper.Viper
 var cfgLogger *viper.Viper
 
 // jwt 配置项
-var cfgJwt *viper.Viper
+var cfgJWT *viper.Viper
 
 // mysql 配置项
 var cfgMysql *viper.Viper
@@ -47,6 +47,13 @@ func Setup(path string) {
 		panic("No found settings.logger in the configuration")
 	}
 	LoggerConfig = InitLogger(cfgLogger)
+
+	// JWT配置初始化
+	cfgJWT = viper.Sub("settings.jwt")
+	if cfgJWT == nil {
+		panic("No found settings.jwt in the configuration")
+	}
+	JWTConfig = InitJWT(cfgJWT)
 
 	// 数据库配置初始化
 	cfgMysql = viper.Sub("settings.mysql")

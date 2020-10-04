@@ -11,7 +11,8 @@ func HasError(err error, msg string, code ...int) {
 		if len(code) > 0 {
 			statusCode = code[0]
 		}
-		if msg != "" {
+		// 为空时，设置error信息
+		if msg == "" {
 			msg = err.Error()
 		}
 		panic("CustomError#" + strconv.Itoa(statusCode) + "#" + msg)

@@ -45,11 +45,12 @@ func CustomError(c *gin.Context) {
 						c.ClientIP(),
 						msg,
 					)
-					global.Logger.Fatal(" panic error :", err)
+					global.Logger.Error(" panic error :", err)
 					c.JSON(http.StatusOK, gin.H{
 						"code": statusCode,
 						"msg":  msg,
 					})
+					break
 				}
 			default:
 				panic(err)

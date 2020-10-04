@@ -2,19 +2,31 @@ package router
 
 import (
 	"go-core-frame/api/system"
+	"go-core-frame/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-func initSysRouter(r *gin.Engine) {
-	g := r.Group("")
+// InitSystemRouter 初始化路由
+func InitSystemRouter(Router *gin.RouterGroup) {
+	// 基础路由
+	initBaseRouter(Router)
 
-	// 一些基础路由，可用于测试
-	sysBaseRouter(g)
+	// 用户路由
+	initUserRouter(Router)
 }
 
-func sysBaseRouter(r *gin.RouterGroup) {
-	r.GET("/", system.HelloWorld)
+// InitBaseRouter 基础路由，不需要鉴权
+func initBaseRouter(Router *gin.RouterGroup) {
+	Router.GET("/", system.HelloWorld)
+	Router.POST("/login", system.Login)
+}
 
-	r.POST("/sysuser/:userId", system.GetSysUser)
+// InitUserRouter 用户路由
+func initUserRouter(Router *gin.RouterGroup) {
+	APIRouter := Router.Group("user").
+		Use(middleware.JWTAuth())
+	{
+		APIRouter.GET("/:userId", system.GetSysUser)
+	}
 }

@@ -5,7 +5,7 @@ settings:
     # 服务器ip，默认使用 0.0.0.0
     host: 0.0.0.0
     # 服务名称
-    name: testApp
+    name: goCore
     # 端口号
     port: 8000 # 服务端口号
     readtimeout: 1
@@ -29,9 +29,13 @@ settings:
     enabledjob: false
   jwt:
     # token 密钥，生产环境时及的修改
-    secret: go-admin
+    secret: go-core
     # token 过期时间 单位：秒
     timeout: 3600
+    # token 缓冲时间，当 Token 过期且小于缓冲时间时，无需登录，生成新的 Token 单位：秒
+    bufferTime: 3600
+    # Token 前后端 Header 入参名称
+    headerName: Authorization
   mysql:
     # 用户名
     username: root

@@ -1,11 +1,14 @@
 package middleware
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
 	"go-core-frame/global"
 	"go-core-frame/models"
+	"go-core-frame/pkg/app"
 	"go-core-frame/pkg/config"
 	"go-core-frame/utils"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +20,13 @@ func SetLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 开始时间
 		startTime := time.Now()
+
+		// 把 后续处理的 response body 信息储存
+		writer := responseBodyWriter{
+			ResponseWriter: c.Writer,
+			body:           &bytes.Buffer{},
+		}
+		c.Writer = writer
 
 		// 处理请求
 		c.Next()
@@ -40,15 +50,14 @@ func SetLogger() gin.HandlerFunc {
 		clientIP := c.ClientIP()
 
 		// 日志格式
-		fmt.Printf("%s [INFO] %s %s %3d %13v %15s \r\n",
-			startTime.Format("2006-01-02 15:04:05"),
-			reqMethod,
-			reqURI,
-			statusCode,
-			latencyTime,
-			clientIP,
-		)
-
+		// fmt.Printf("%s [INFO] %s %s %3d %13v %15s \r\n",
+		// 	startTime.Format("2006-01-02 15:04:05"),
+		// 	reqMethod,
+		// 	reqURI,
+		// 	statusCode,
+		// 	latencyTime,
+		// 	clientIP,
+		// )
 		// 打印日志到文件
 		global.Logger.Info(statusCode, latencyTime, clientIP, reqMethod, reqURI)
 
@@ -56,14 +65,14 @@ func SetLogger() gin.HandlerFunc {
 		if c.Request.Method != "GET" && c.Request.Method != "OPTIONS" {
 			// 如果配置开启了保存在数据库
 			if config.LoggerConfig.EnabledDB {
-				LoggerToDB(c, clientIP, statusCode, reqURI, reqMethod, latencyTime)
+				LoggerToDB(c, clientIP, statusCode, reqURI, reqMethod, latencyTime, writer)
 			}
 		}
 	}
 }
 
 // LoggerToDB 保存请求日志到数据库
-func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, reqMethod string, latencyTime time.Duration) {
+func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, reqMethod string, latencyTime time.Duration, writer responseBodyWriter) {
 	api := models.API{}
 	api.Path = reqURI
 	api.Method = reqMethod
@@ -72,14 +81,23 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 	ipLocation := utils.GetLocation(clientIP)
 	ua := user_agent.New(c.Request.Header.Get("User-Agent"))
 
-	if reqURI == "/login" {
+	var response app.Response
+	json.Unmarshal([]byte(writer.body.String()), &response)
+
+	// 获取当前用户信息
+	username, ok := c.Get("username")
+	if !ok {
+		username = "-"
+	}
+
+	if strings.Contains(reqURI, "/login") {
 		loginLog := models.LoginLog{}
-		loginLog.UserName = "Test"
+		loginLog.UserName = username.(string)
 		loginLog.IPAddress = clientIP
 		loginLog.IPLocation = ipLocation
 		loginLog.Browser, _ = ua.Browser()
 		loginLog.OS = ua.OS()
-		loginLog.Result = "OK"
+		loginLog.Result = response.Msg
 		loginLog.LoginTime = utils.GetCurrentTime()
 
 		loginLog.Create()
@@ -87,13 +105,13 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 		operLog := models.OperLog{}
 		operLog.IPAddress = clientIP
 		operLog.IPLocation = ipLocation
-		operLog.OperName = "Test"
+		operLog.OperName = username.(string)
 		operLog.Method = reqMethod
 		operLog.Path = reqURI
 		operLog.LatencyTime = (latencyTime).String()
 		operLog.Browser, _ = ua.Browser()
 		operLog.OS = ua.OS()
-		operLog.Result = "OK"
+		operLog.Result = response.Msg
 		operLog.OperTime = utils.GetCurrentTime()
 
 		body, _ := c.Get("body")
@@ -106,4 +124,14 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 		operLog.Create()
 	}
 
+}
+
+type responseBodyWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (r responseBodyWriter) Write(b []byte) (int, error) {
+	r.body.Write(b)
+	return r.ResponseWriter.Write(b)
 }
