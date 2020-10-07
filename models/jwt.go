@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"go-core-frame/global"
 	"go-core-frame/pkg/config"
 	"time"
 
@@ -83,6 +84,10 @@ func (j *JWT) CreateToken(userClaims *UserClaims) (*Token, error) {
 		Token:  token,
 		Expire: claims.StandardClaims.ExpiresAt,
 	}
+
+	// 把Token 存储在redis内
+	err = global.Redis.Set(claims.UserClaims.Usercode, token, time.Duration(j.Timeout)*time.Second).Err()
+
 	return nowToken, err
 }
 
@@ -98,6 +103,9 @@ func (j *JWT) ParseToken(tokenString string) (*JWTClaims, error) {
 				return nil, ErrTokenMalformed
 			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
 				// Token is expired
+				if claims, ok := token.Claims.(*JWTClaims); ok {
+					return claims, ErrTokenExpired
+				}
 				return nil, ErrTokenExpired
 			} else {
 				return nil, ErrTokenInvalid

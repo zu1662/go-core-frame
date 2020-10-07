@@ -27,6 +27,7 @@ func initUserRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("user").
 		Use(middleware.JWTAuth())
 	{
+		APIRouter.POST("/logout", system.Logout)
 		APIRouter.GET("/:userId", system.GetSysUser)
 	}
 }

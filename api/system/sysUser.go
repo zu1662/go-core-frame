@@ -1,6 +1,7 @@
 package system
 
 import (
+	"go-core-frame/global"
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
 	"go-core-frame/utils"
@@ -10,6 +11,12 @@ import (
 )
 
 // Login 用户登录
+// @Tags user
+// @Summary 用户登录
+// @Produce  application/json
+// @Param data body models.LoginForm true "用户登录接口"
+// @Success 200 {string} string "{"code":200,"data":{"token": "token value", "expire": "expire time"},"msg":"ok"}"
+// @Router /user/login [post]
 func Login(c *gin.Context) {
 	var data models.LoginForm
 	err := c.ShouldBindWith(&data, binding.JSON)
@@ -36,12 +43,42 @@ func Login(c *gin.Context) {
 	utils.HasError(tokenErr, "获取Token失败", 0)
 	app.Custom(c, gin.H{
 		"code": 200,
-		"msg":  "ok",
+		"msg":  "登陆成功",
 		"data": token,
 	})
 }
 
+// Logout 用户退出
+// @Tags user
+// @Summary 用户退出
+// @Produce  application/json
+// @Success 200 {string} string "{"code":200,"data":null,"msg":"ok"}"
+// @Router /user/logout [post]
+// @Security Authorization
+func Logout(c *gin.Context) {
+
+	username, _ := c.Get("username")
+
+	err := global.Redis.Do("DEL", username).Err()
+	if err != nil {
+		utils.HasError(err, "退出失败", 0)
+	}
+
+	app.Custom(c, gin.H{
+		"code": 200,
+		"msg":  "退出成功",
+	})
+
+}
+
 // GetSysUser 获取用户详情信息
+// @Tags user
+// @Summary 获取用户详情信息
+// @Produce  application/json
+// @Param userId int true "用户编码"
+// @Success 200 {object} app.Response "{"code": 200, "data": [...], "msg": "ok"}"
+// @Router /user/{userId} [get]
+// @Security Authorization
 func GetSysUser(c *gin.Context) {
 	userID, _ := utils.StringToInt(c.Param("userId"))
 	sysUser := models.SysUser{}
