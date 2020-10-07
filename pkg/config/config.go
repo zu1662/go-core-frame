@@ -61,4 +61,11 @@ func Setup(path string) {
 		panic("No found settings.mysql in the configuration")
 	}
 	MysqlConfig = InitMysql(cfgMysql)
+
+	// redis 配置初始化
+	cfgRedis = viper.Sub("settings.redis")
+	if cfgMysql == nil {
+		panic("No found settings.redis in the configuration")
+	}
+	RedisConfig = InitRedis(cfgRedis)
 }

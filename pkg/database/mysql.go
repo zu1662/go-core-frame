@@ -11,8 +11,8 @@ import (
 // MysqlDB info
 var MysqlDB *gorm.DB
 
-// Setup Gorm & Mysql 初始化
-func Setup() {
+// MysqlSetup Gorm & Mysql 初始化
+func MysqlSetup() {
 	var connectDsn = config.MysqlConfig.Username + ":" +
 		config.MysqlConfig.Password + "@tcp(" +
 		config.MysqlConfig.Host + ":" +

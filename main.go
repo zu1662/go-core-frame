@@ -73,5 +73,8 @@ func setup() {
 	logger.Setup()
 
 	// 数据库mysql初始化
-	database.Setup()
+	database.MysqlSetup()
+
+	// Redis初始化
+	database.RedisSetup()
 }

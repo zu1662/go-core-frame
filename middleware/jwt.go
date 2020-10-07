@@ -15,7 +15,7 @@ func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get(config.JWTConfig.HeaderName)
 		if token == "" {
-			app.Error(c, 401, models.ErrTokenEmpty, "")
+			app.Error(c, 401, models.ErrTokenEmpty, "Token为空，请重新登录")
 			c.Abort()
 			return
 		}
@@ -47,7 +47,7 @@ func JWTAuth() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			app.Error(c, 401, err, "")
+			app.Error(c, 401, err, "无法解析Token，请重新登录")
 			c.Abort()
 			return
 		}
