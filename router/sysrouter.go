@@ -12,6 +12,8 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 	// 基础路由
 	initBaseRouter(Router)
 
+	// 日志路由
+	initLogRouter(Router)
 	// 用户路由
 	initUserRouter(Router)
 }
@@ -20,6 +22,18 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 func initBaseRouter(Router *gin.RouterGroup) {
 	Router.GET("/", system.HelloWorld)
 	Router.POST("/login", system.Login)
+}
+
+// InitLogRouter 操作日志路由
+func initLogRouter(Router *gin.RouterGroup) {
+	APIRouter := Router.Group("log").
+		Use(middleware.JWTAuth())
+	{
+		APIRouter.GET("/loginloginfo", system.GetLoginLogInfo)
+		APIRouter.GET("/loginloglist", system.GetLoginLogList)
+		APIRouter.GET("/operloginfo", system.GetOperLogInfo)
+		APIRouter.GET("/operloglist", system.GetOperLogList)
+	}
 }
 
 // InitUserRouter 用户路由

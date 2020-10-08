@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"go-core-frame/global"
 	"time"
 )
@@ -23,18 +24,45 @@ func (e *LoginLog) tableName() string {
 	return "sys_login_log"
 }
 
-// Get LoginLog 信息获取
-func (e *LoginLog) Get() (LoginLogs []LoginLog, err error) {
+// GetDetail LoginLog 信息详情
+func (e *LoginLog) GetDetail() (LoginLogs LoginLog, err error) {
 	table := global.DB.Table(e.tableName())
 
 	if e.ID > 0 {
 		table = table.Where("id = ?", e.ID)
 	}
 
-	if err = table.Find(&LoginLogs).Error; err != nil {
+	table = table.Where("is_deleted = ?", 0)
+
+	if err = table.First(&LoginLogs).Error; err != nil {
+		err = errors.New("获取详情信息失败")
 		return
 	}
 	return
+}
+
+// GetPage LoginLog List列表信息
+func (e *LoginLog) GetPage(pageSize int, pageIndex int) ([]LoginLog, int64, error) {
+	var doc []LoginLog
+
+	table := global.DB.Table(e.tableName())
+	if e.IPAddress != "" {
+		table = table.Where("ip_address = ?", e.IPAddress)
+	}
+	if e.UserName != "" {
+		table = table.Where("user_name = ?", e.UserName)
+	}
+
+	table = table.Where("is_deleted = ?", 0)
+
+	var count int64
+
+	err := table.Order("id desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
+	err = table.Count(&count).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	return doc, count, nil
 }
 
 // Create LoginLog 创建
@@ -48,4 +76,11 @@ func (e *LoginLog) Create() (LoginLog LoginLog, err error) {
 	}
 	doc = *e
 	return doc, nil
+}
+
+// Delete LoginLog 逻辑删除
+func (e *LoginLog) Delete() (err error) {
+	table := global.DB.Table(e.tableName())
+	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	return
 }

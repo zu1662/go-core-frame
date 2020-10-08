@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"go-core-frame/global"
 	"time"
 )
@@ -20,6 +21,7 @@ type OperLog struct {
 	OS          string    `json:"os"`          // 操作系统
 	Result      string    `json:"reslut"`      // 操作结果
 	OperTime    time.Time `json:"operTime"`    // 操作时间
+	BaseModel
 }
 
 // tableName 获取当前表的名称
@@ -27,18 +29,48 @@ func (e *OperLog) tableName() string {
 	return "sys_oper_log"
 }
 
-// Get OperLog 信息获取
-func (e *OperLog) Get() (OperLogs []OperLog, err error) {
+// GetDetail OperLog 信息详情
+func (e *OperLog) GetDetail() (OperLogs OperLog, err error) {
 	table := global.DB.Table(e.tableName())
 
 	if e.ID > 0 {
 		table = table.Where("id = ?", e.ID)
 	}
 
-	if err = table.Find(&OperLogs).Error; err != nil {
+	table = table.Where("is_deleted = ?", 0)
+
+	if err = table.First(&OperLogs).Error; err != nil {
+		err = errors.New("获取详情信息失败")
 		return
 	}
 	return
+}
+
+// GetPage OperLog List列表信息
+func (e *OperLog) GetPage(pageSize int, pageIndex int) ([]OperLog, int64, error) {
+	var doc []OperLog
+
+	table := global.DB.Table(e.tableName())
+	if e.IPAddress != "" {
+		table = table.Where("ip_address = ?", e.IPAddress)
+	}
+	if e.Method != "" {
+		table = table.Where("method = ?", e.Method)
+	}
+	if e.OperName != "" {
+		table = table.Where("oper_name = ?", e.OperName)
+	}
+
+	table = table.Where("is_deleted = ?", 0)
+
+	var count int64
+
+	err := table.Order("id desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
+	err = table.Count(&count).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	return doc, count, nil
 }
 
 // Create OperLog 创建
@@ -53,4 +85,11 @@ func (e *OperLog) Create() (OperLog OperLog, err error) {
 	}
 	doc = *e
 	return doc, nil
+}
+
+// Delete OperLog 逻辑删除
+func (e *OperLog) Delete() (err error) {
+	table := global.DB.Table(e.tableName())
+	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	return
 }

@@ -90,7 +90,7 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 		username = "-"
 	}
 
-	if strings.Contains(reqURI, "/login") || strings.Contains(reqURI, "/logout") {
+	if strings.Contains(reqURI, "/login") {
 		loginLog := models.LoginLog{}
 		loginLog.UserName = username.(string)
 		loginLog.IPAddress = clientIP

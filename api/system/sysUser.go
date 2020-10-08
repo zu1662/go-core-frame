@@ -42,7 +42,7 @@ func Login(c *gin.Context) {
 	})
 	utils.HasError(tokenErr, "获取Token失败", 0)
 	app.Custom(c, gin.H{
-		"code": 200,
+		"code": 1,
 		"msg":  "登陆成功",
 		"data": token,
 	})
@@ -65,7 +65,7 @@ func Logout(c *gin.Context) {
 	}
 
 	app.Custom(c, gin.H{
-		"code": 200,
+		"code": 1,
 		"msg":  "退出成功",
 	})
 
@@ -87,7 +87,7 @@ func GetSysUser(c *gin.Context) {
 	utils.HasError(err, "抱歉未找到相关信息", 0)
 
 	app.Custom(c, gin.H{
-		"code": 200,
+		"code": 1,
 		"msg":  "ok",
 		"data": nowUser,
 	})
