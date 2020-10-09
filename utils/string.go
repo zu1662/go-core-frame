@@ -75,3 +75,12 @@ func StructToMap(data interface{}) (map[string]interface{}, error) {
 	}
 	return mapData, nil
 }
+
+// MobileSecurity 手机号中间加密
+func MobileSecurity(mobile string) string {
+	if len(mobile) < 10 {
+		return mobile
+	}
+	secMobile := mobile[:3] + "****" + mobile[6:]
+	return secMobile
+}

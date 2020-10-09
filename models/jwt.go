@@ -117,7 +117,6 @@ func (j *JWT) ParseToken(tokenString string) (*JWTClaims, error) {
 			return claims, nil
 		}
 		return nil, ErrTokenInvalid
-	} else {
-		return nil, ErrTokenInvalid
 	}
+	return nil, ErrTokenInvalid
 }

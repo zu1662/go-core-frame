@@ -21,7 +21,6 @@ type OperLog struct {
 	OS          string    `json:"os"`          // 操作系统
 	Result      string    `json:"reslut"`      // 操作结果
 	OperTime    time.Time `json:"operTime"`    // 操作时间
-	BaseModel
 }
 
 // tableName 获取当前表的名称

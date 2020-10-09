@@ -21,7 +21,13 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 // InitBaseRouter 基础路由，不需要鉴权
 func initBaseRouter(Router *gin.RouterGroup) {
 	Router.GET("/", system.HelloWorld)
-	Router.POST("/login", system.Login)
+
+	BaseRouter := Router.Group("base")
+	{
+		BaseRouter.POST("/login", system.Login)
+		BaseRouter.Use(middleware.JWTAuth()).POST("/logout", system.Logout)
+		BaseRouter.Use(middleware.JWTAuth()).GET("/userinfo", system.GetUserInfo)
+	}
 }
 
 // InitLogRouter 操作日志路由
@@ -41,7 +47,10 @@ func initUserRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("user").
 		Use(middleware.JWTAuth())
 	{
-		APIRouter.POST("/logout", system.Logout)
-		APIRouter.GET("/:userId", system.GetSysUser)
+		APIRouter.GET("/userinfo/:userId", system.GetUserDetail)
+		APIRouter.GET("/userlist", system.GetUserList)
+		APIRouter.PUT("/userupdate", system.UpdateUser)
+		APIRouter.DELETE("/userdelete/:userId", system.DeleteUser)
+		APIRouter.POST("/useradd", system.InsertUser)
 	}
 }
