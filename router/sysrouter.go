@@ -16,6 +16,8 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 	initLogRouter(Router)
 	// 用户路由
 	initUserRouter(Router)
+	// 部门路由
+	initDeptRouter(Router)
 }
 
 // InitBaseRouter 基础路由，不需要鉴权
@@ -47,10 +49,23 @@ func initUserRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("user").
 		Use(middleware.JWTAuth())
 	{
-		APIRouter.GET("/userinfo/:userId", system.GetUserDetail)
-		APIRouter.GET("/userlist", system.GetUserList)
-		APIRouter.PUT("/userupdate", system.UpdateUser)
-		APIRouter.DELETE("/userdelete/:userId", system.DeleteUser)
-		APIRouter.POST("/useradd", system.InsertUser)
+		APIRouter.GET("/info/:userId", system.GetUserDetail)
+		APIRouter.GET("/list", system.GetUserList)
+		APIRouter.PUT("/update", system.UpdateUser)
+		APIRouter.DELETE("/delete/:userId", system.DeleteUser)
+		APIRouter.POST("/add", system.InsertUser)
+	}
+}
+
+// initDeptRouter 部门路由
+func initDeptRouter(Router *gin.RouterGroup) {
+	APIRouter := Router.Group("dept").
+		Use(middleware.JWTAuth())
+	{
+		APIRouter.GET("/info/:deptId", system.GetDeptDetail)
+		APIRouter.GET("/tree", system.GetDeptTree)
+		APIRouter.PUT("/update", system.UpdateDept)
+		APIRouter.DELETE("/delete/:deptId", system.DeleteDept)
+		APIRouter.POST("/add", system.InsertDept)
 	}
 }

@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
 	"go-core-frame/utils"
@@ -13,8 +14,8 @@ import (
 // @Summary 获取用户详情信息
 // @Produce  application/json
 // @Param userId int true "用户编码"
-// @Success 200 {object} app.Response "{"code": 200, "data": [...], "msg": "ok"}"
-// @Router /user/userdetail/{userId} [get]
+// @Success 200 {object} app.Response "{"code": 1, "data": [...], "msg": "ok"}"
+// @Router /user/info/{userId} [get]
 // @Security Authorization
 func GetUserDetail(c *gin.Context) {
 	userID, _ := utils.StringToInt(c.Param("userId"))
@@ -38,8 +39,8 @@ func GetUserDetail(c *gin.Context) {
 // @Param status query string false "状态""
 // @Param pageSize query int false "页条数"
 // @Param pageIndex query int false "页码"
-// @Success 200 {object} app.Response "{"code": 200, "msg": "ok", "data": [...]}"
-// @Router /user/userlist [get]
+// @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
+// @Router /user/list [get]
 // @Security Bearer
 func GetUserList(c *gin.Context) {
 	var data models.SysUserView
@@ -76,17 +77,22 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
-// UpdateUser 用户列表
-// @Summary 用户列表
+// UpdateUser 更新用户
+// @Summary 更新用户
 // @Tags user
 // @Param data body models.SysUser true "body"
-// @Success 200 {string} string	"{"code": 200, "msg": "修改成功"}"
+// @Success 200 {string} string	"{"code": 1, "msg": "修改成功"}"
 // @Success 200 {string} string	"{"code": 0, "msg": "修改失败"}"
 // @Router /user/update/{userId} [put]
 func UpdateUser(c *gin.Context) {
 	var data models.SysUser
 	err := c.Bind(&data)
 	utils.HasError(err, "", 0)
+
+	if data.ID <= 0 {
+		err = errors.New("id 不能为空")
+		utils.HasError(err, "", 0)
+	}
 
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
@@ -109,9 +115,9 @@ func UpdateUser(c *gin.Context) {
 // @Summary 添加用户
 // @Tags user
 // @Param data body models.SysUser true "用户数据"
-// @Success 200 {string} string	"{"code": 200, "message": "添加成功"}"
-// @Success 200 {string} string	"{"code": -1, "message": "添加失败"}"
-// @Router /api/v1/user/adduser [post]
+// @Success 200 {string} string	"{"code": 1, "message": "添加成功"}"
+// @Success 200 {string} string	"{"code": 0, "message": "添加失败"}"
+// @Router /api/v1/user/add [post]
 func InsertUser(c *gin.Context) {
 	var sysuser models.SysUser
 	err := c.Bind(&sysuser)
@@ -138,8 +144,8 @@ func InsertUser(c *gin.Context) {
 // @Summary 删除用户
 // @Tags user
 // @Param userId query string true "用户id"
-// @Success 200 {string} string	"{"code": 200, "msg": "删除成功"}"
-// @Router /user/update/{userId} [delete]
+// @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
+// @Router /user/delete/{userId} [delete]
 func DeleteUser(c *gin.Context) {
 	userID, _ := utils.StringToInt(c.Param("userId"))
 

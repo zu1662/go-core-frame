@@ -13,19 +13,19 @@ type LoginForm struct {
 
 // SysUser 用户信息结构
 type SysUser struct {
-	ID       int    `gorm:"" json:"id" valid:"required"` //数据库id
-	UUID     string `json:"uuid"`                        // UUID
-	UserCode string `json:"userCode" valid:"required"`   // 编码
-	UserName string `json:"userName" valid:"required"`   // 名称
-	Password string `json:"password"`                    // 密码
-	Mobile   string `json:"mobile" valid:"required"`     // 手机号
-	Avatar   string `json:"avatar"`                      //头像
-	Gender   string `json:"gender"`                      //性别
-	Email    string `json:"email"`                       //邮箱
-	RoleID   int    `json:"roleId"`                      // 角色编码
-	DeptID   int    `json:"deptId"`                      //部门编码
-	PostID   int    `json:"postId"`                      //职位编码
-	Status   string `json:"status"`                      // 状态
+	ID       int    `gorm:"" json:"id"`                //数据库id
+	UUID     string `json:"uuid"`                      // UUID
+	UserCode string `json:"userCode" valid:"required"` // 编码
+	UserName string `json:"userName" valid:"required"` // 名称
+	Password string `json:"password"`                  // 密码
+	Mobile   string `json:"mobile" valid:"required"`   // 手机号
+	Avatar   string `json:"avatar"`                    //头像
+	Gender   string `json:"gender"`                    //性别
+	Email    string `json:"email"`                     //邮箱
+	RoleID   int    `json:"roleId"`                    // 角色编码
+	DeptID   int    `json:"deptId"`                    //部门编码
+	PostID   int    `json:"postId"`                    //职位编码
+	Status   string `json:"status"`                    // 状态
 	BaseModel
 }
 
@@ -57,6 +57,8 @@ func (e *SysUser) GetUser() (sysUser SysUser, err error) {
 	if e.Password != "" {
 		table = table.Where("password = ?", e.Password)
 	}
+
+	table = table.Where("is_deleted = ?", 0)
 
 	if err = table.First(&sysUser).Error; err != nil {
 		return
