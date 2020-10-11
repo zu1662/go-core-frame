@@ -47,8 +47,8 @@ func run() {
 	fmt.Printf("-  Local:   http://localhost:%s/ \r\n", config.ApplicationConfig.Port)
 	fmt.Printf("-  Network: http://%s:%s/ \r\n", utils.GetLocaHonst(), config.ApplicationConfig.Port)
 	fmt.Println(utils.Green("Swagger run at:"))
-	fmt.Printf("-  Local:   http://localhost:%s/swagger/index.html \r\n", config.ApplicationConfig.Port)
-	fmt.Printf("-  Network: http://%s:%s/swagger/index.html \r\n", utils.GetLocaHonst(), config.ApplicationConfig.Port)
+	fmt.Printf("-  Local:   http://localhost:%s/%s/swagger/index.html \r\n", config.ApplicationConfig.Port, config.ApplicationConfig.APIVersion)
+	fmt.Printf("-  Network: http://%s:%s/%s/swagger/index.html \r\n", utils.GetLocaHonst(), config.ApplicationConfig.Port, config.ApplicationConfig.APIVersion)
 	fmt.Printf("%s Enter Control + C Shutdown Server \r\n", utils.GetCurrentTimeStr())
 
 	// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）

@@ -13,7 +13,7 @@ import (
 // @Tags dept
 // @Summary 获取部门详情信息
 // @Produce  application/json
-// @Param deptId int true "部门编码"
+// @Param deptId query int true "部门编码"
 // @Success 200 {object} app.Response "{"code": 1, "data": {...}, "msg": "ok"}"
 // @Router /dept/info/{deptId} [get]
 // @Security Authorization

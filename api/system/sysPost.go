@@ -13,7 +13,7 @@ import (
 // @Tags post
 // @Summary 获取岗位详情信息
 // @Produce  application/json
-// @Param postId int true "部门编码"
+// @Param postId query int true "部门编码"
 // @Success 200 {object} app.Response "{"code": 1, "data": {...}, "msg": "ok"}"
 // @Router /post/info/{postId} [get]
 // @Security Authorization

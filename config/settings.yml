@@ -8,6 +8,8 @@ settings:
     name: goCore
     # 端口号
     port: 8000 # 服务端口号
+    # api 版本
+    apiversion: v1
     readtimeout: 1
     writertimeout: 2
     # 数据权限功能开关

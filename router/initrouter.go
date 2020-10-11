@@ -3,6 +3,7 @@ package router
 import (
 	"go-core-frame/global"
 	"go-core-frame/middleware"
+	"go-core-frame/pkg/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,7 +39,7 @@ func InitRouter() *gin.Engine {
 	Router.Use(middleware.NoCache)
 
 	// 方便统一添加路由组前缀 多服务器上线使用
-	APIGroup := Router.Group("v1")
+	APIGroup := Router.Group(config.ApplicationConfig.APIVersion)
 	InitSystemRouter(APIGroup)
 
 	return Router

@@ -4,7 +4,12 @@ import (
 	"go-core-frame/api/system"
 	"go-core-frame/middleware"
 
+	// Swagger doc path
+	_ "go-core-frame/docs"
+
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // InitSystemRouter 初始化路由
@@ -27,6 +32,7 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 // InitBaseRouter 基础路由，不需要鉴权
 func initBaseRouter(Router *gin.RouterGroup) {
 	Router.GET("/", system.HelloWorld)
+	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	BaseRouter := Router.Group("base")
 	{

@@ -13,7 +13,7 @@ import (
 // @Tags user
 // @Summary 获取用户详情信息
 // @Produce  application/json
-// @Param userId int true "用户编码"
+// @Param userId query int true "用户编码"
 // @Success 200 {object} app.Response "{"code": 1, "data": [...], "msg": "ok"}"
 // @Router /user/info/{userId} [get]
 // @Security Authorization

@@ -11,6 +11,7 @@ type Application struct {
 	WriterTimeout int
 	Host          string
 	Port          string
+	APIVersion    string
 	Name          string
 	Mode          string
 	EnableDP      bool
@@ -23,6 +24,7 @@ func InitApplication(cfg *viper.Viper) *Application {
 		WriterTimeout: cfg.GetInt("writerTimeout"),
 		Host:          cfg.GetString("host"),
 		Port:          cfg.GetString("port"),
+		APIVersion:    cfg.GetString("apiversion"),
 		Name:          cfg.GetString("name"),
 		Mode:          cfg.GetString("mode"),
 		EnableDP:      cfg.GetBool("enabledp"),

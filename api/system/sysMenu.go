@@ -13,7 +13,7 @@ import (
 // @Tags menu
 // @Summary 获取菜单详情信息
 // @Produce  application/json
-// @Param menuId int true "菜单编码"
+// @Param menuId query int true "菜单编码"
 // @Success 200 {object} app.Response "{"code": 1, "data": {...}, "msg": "ok"}"
 // @Router /menu/info/{menuId} [get]
 // @Security Authorization
@@ -33,7 +33,7 @@ func GetMenuDetail(c *gin.Context) {
 
 // UpdateMenu 更新菜单
 // @Summary 更新菜单
-// @Tags dept
+// @Tags menu
 // @Param data body models.SysMenu true "body"
 // @Success 200 {string} string	"{"code": 1, "msg": "修改成功"}"
 // @Success 200 {string} string	"{"code": 0, "msg": "修改失败"}"
@@ -67,7 +67,7 @@ func UpdateMenu(c *gin.Context) {
 
 // InsertMenu 添加菜单
 // @Summary 添加菜单
-// @Tags dept
+// @Tags menu
 // @Param data body models.SysMenu true "部门数据"
 // @Success 200 {string} string	"{"code": 1, "message": "添加成功"}"
 // @Success 200 {string} string	"{"code": 0, "message": "添加失败"}"
@@ -96,7 +96,7 @@ func InsertMenu(c *gin.Context) {
 
 // DeleteMenu 删除菜单
 // @Summary 删除菜单
-// @Tags dept
+// @Tags menu
 // @Param menuId query string true "菜单id"
 // @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
 // @Router /menu/delete/{menuId} [delete]
