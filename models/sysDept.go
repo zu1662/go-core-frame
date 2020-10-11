@@ -45,7 +45,7 @@ func (e *SysDept) GetDept() (sysDept SysDept, err error) {
 		table = table.Where("status = ?", e.Status)
 	}
 
-	table = table.Where("sys_dept.is_deleted = ?", 0)
+	table = table.Where("is_deleted = ?", 0)
 
 	if err = table.First(&sysDept).Error; err != nil {
 		return
@@ -122,17 +122,17 @@ func (e *SysDeptView) GetDeptTree() ([]SysDeptView, error) {
 		if nowDept.Pid != 0 {
 			continue
 		}
-		newDept := recursion(&doc, nowDept)
+		newDept := recursionDept(&doc, nowDept)
 		docView = append(docView, newDept)
 	}
 	return docView, nil
 }
 
 // recursion 递归树结构
-func recursion(deptList *[]SysDeptView, nowDept SysDeptView) SysDeptView {
+func recursionDept(deptList *[]SysDeptView, nowDept SysDeptView) SysDeptView {
 	for _, dept := range *deptList {
 		if dept.Pid == nowDept.ID {
-			newDept := recursion(deptList, dept)
+			newDept := recursionDept(deptList, dept)
 			nowDept.Children = append(nowDept.Children, newDept)
 		} else {
 			continue

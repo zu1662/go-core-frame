@@ -9,19 +9,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetDeptDetail 获取部门详情信息
-// @Tags dept
-// @Summary 获取部门详情信息
+// GetMenuDetail 获取菜单详情信息
+// @Tags menu
+// @Summary 获取菜单详情信息
 // @Produce  application/json
-// @Param deptId int true "部门编码"
+// @Param menuId int true "菜单编码"
 // @Success 200 {object} app.Response "{"code": 1, "data": {...}, "msg": "ok"}"
-// @Router /dept/info/{deptId} [get]
+// @Router /menu/info/{menuId} [get]
 // @Security Authorization
-func GetDeptDetail(c *gin.Context) {
-	deptID, _ := utils.StringToInt(c.Param("deptId"))
-	sysDept := models.SysDept{}
-	sysDept.ID = deptID
-	nowDept, err := sysDept.GetDept()
+func GetMenuDetail(c *gin.Context) {
+	menuID, _ := utils.StringToInt(c.Param("menuId"))
+	sysMenu := models.SysMenu{}
+	sysMenu.ID = menuID
+	nowDept, err := sysMenu.GetMenu()
 	utils.HasError(err, "抱歉未找到相关信息", 0)
 
 	app.Custom(c, gin.H{
@@ -31,15 +31,15 @@ func GetDeptDetail(c *gin.Context) {
 	})
 }
 
-// UpdateDept 更新部门
-// @Summary 更新部门
+// UpdateMenu 更新菜单
+// @Summary 更新菜单
 // @Tags dept
-// @Param data body models.SysDept true "body"
+// @Param data body models.SysMenu true "body"
 // @Success 200 {string} string	"{"code": 1, "msg": "修改成功"}"
 // @Success 200 {string} string	"{"code": 0, "msg": "修改失败"}"
-// @Router /dept/update/{deptId} [put]
-func UpdateDept(c *gin.Context) {
-	var data models.SysDept
+// @Router /menu/update/{menuId} [put]
+func UpdateMenu(c *gin.Context) {
+	var data models.SysMenu
 	err := c.Bind(&data)
 	utils.HasError(err, "", 0)
 
@@ -58,22 +58,22 @@ func UpdateDept(c *gin.Context) {
 	data.UpdateBy = username.(string)
 	data.UpdateTime = utils.GetCurrentTime()
 
-	result, err := data.UpdateDept()
+	result, err := data.UpdateMenu()
 
 	utils.HasError(err, "修改失败", 0)
 
 	app.OK(c, "修改成功", result)
 }
 
-// InsertDept 添加部门
-// @Summary 添加部门
+// InsertMenu 添加菜单
+// @Summary 添加菜单
 // @Tags dept
-// @Param data body models.SysDept true "部门数据"
+// @Param data body models.SysMenu true "部门数据"
 // @Success 200 {string} string	"{"code": 1, "message": "添加成功"}"
 // @Success 200 {string} string	"{"code": 0, "message": "添加失败"}"
-// @Router /api/v1/dept/add [post]
-func InsertDept(c *gin.Context) {
-	var data models.SysDept
+// @Router /api/v1/menu/add [post]
+func InsertMenu(c *gin.Context) {
+	var data models.SysMenu
 	err := c.Bind(&data)
 	utils.HasError(err, "非法数据格式", 0)
 
@@ -89,21 +89,21 @@ func InsertDept(c *gin.Context) {
 	data.UpdateBy = username.(string)
 	data.UpdateTime = utils.GetCurrentTime()
 
-	id, err := data.InsertDept()
+	id, err := data.InsertMenu()
 	utils.HasError(err, "添加失败", 0)
 	app.OK(c, "添加成功", id)
 }
 
-// DeleteDept 删除部门
-// @Summary 删除部门
+// DeleteMenu 删除菜单
+// @Summary 删除菜单
 // @Tags dept
-// @Param deptId query string true "部门id"
+// @Param menuId query string true "菜单id"
 // @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
-// @Router /dept/delete/{deptId} [delete]
-func DeleteDept(c *gin.Context) {
-	ID, _ := utils.StringToInt(c.Param("deptId"))
+// @Router /menu/delete/{menuId} [delete]
+func DeleteMenu(c *gin.Context) {
+	ID, _ := utils.StringToInt(c.Param("menuId"))
 
-	var data models.SysDept
+	var data models.SysMenu
 	data.ID = ID
 	username, ok := c.Get("username")
 	if !ok {
@@ -111,26 +111,26 @@ func DeleteDept(c *gin.Context) {
 	}
 	data.UpdateBy = username.(string)
 
-	err := data.DeleteDept()
+	err := data.DeleteMenu()
 	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", "")
 }
 
-// GetDeptTree 部门tree
-// @Summary 部门tree
-// @Tags dept
-// @Param deptName query string false "部门名称"
-// @Param status query string false "状态""
+// GetMenuTree 菜单tree
+// @Summary 菜单tree
+// @Tags menu
+// @Param name query string false "名称"
+// @Param title query string false "标题""
 // @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
-// @Router /dept/tree [get]
+// @Router /menu/tree [get]
 // @Security Authrization
-func GetDeptTree(c *gin.Context) {
-	var data models.SysDeptView
+func GetMenuTree(c *gin.Context) {
+	var data models.SysMenuView
 	var err error
 
-	data.DeptName = c.Request.FormValue("deptName")
-	data.Status = c.Request.FormValue("status")
-	result, err := data.GetDeptTree()
+	data.Name = c.Request.FormValue("name")
+	data.Title = c.Request.FormValue("title")
+	result, err := data.GetMenuTree()
 	utils.HasError(err, "", 0)
 
 	app.Custom(c, gin.H{

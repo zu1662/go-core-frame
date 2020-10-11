@@ -20,6 +20,8 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 	initDeptRouter(Router)
 	// 岗位路由
 	initPostRouter(Router)
+	// 菜单路由
+	initMenuRouter(Router)
 }
 
 // InitBaseRouter 基础路由，不需要鉴权
@@ -82,5 +84,18 @@ func initPostRouter(Router *gin.RouterGroup) {
 		APIRouter.PUT("/update", system.UpdatePost)
 		APIRouter.DELETE("/delete/:postId", system.DeletePost)
 		APIRouter.POST("/add", system.InsertPost)
+	}
+}
+
+// initPostRouter 岗位路由
+func initMenuRouter(Router *gin.RouterGroup) {
+	APIRouter := Router.Group("menu").
+		Use(middleware.JWTAuth())
+	{
+		APIRouter.GET("/info/:menuId", system.GetMenuDetail)
+		APIRouter.GET("/tree", system.GetMenuTree)
+		APIRouter.PUT("/update", system.UpdateMenu)
+		APIRouter.DELETE("/delete/:menuId", system.DeleteMenu)
+		APIRouter.POST("/add", system.InsertMenu)
 	}
 }

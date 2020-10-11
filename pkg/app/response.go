@@ -9,7 +9,7 @@ import (
 // OK 成功返回
 func OK(c *gin.Context, msg string, data interface{}) {
 	var res Response
-	res.Code = 200
+	res.Code = 1
 	res.Data = data
 	if msg != "" {
 		res.Msg = msg

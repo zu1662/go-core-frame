@@ -106,7 +106,7 @@ func UpdatePost(c *gin.Context) {
 
 	result, err := data.UpdatePost()
 
-	utils.HasError(err, "修改失败", 500)
+	utils.HasError(err, "修改失败", 0)
 
 	app.OK(c, "修改成功", result)
 }
@@ -121,7 +121,7 @@ func UpdatePost(c *gin.Context) {
 func InsertPost(c *gin.Context) {
 	var data models.SysPost
 	err := c.Bind(&data)
-	utils.HasError(err, "非法数据格式", 500)
+	utils.HasError(err, "非法数据格式", 0)
 
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
@@ -136,7 +136,7 @@ func InsertPost(c *gin.Context) {
 	data.UpdateTime = utils.GetCurrentTime()
 
 	id, err := data.InsertPost()
-	utils.HasError(err, "添加失败", 500)
+	utils.HasError(err, "添加失败", 0)
 	app.OK(c, "添加成功", id)
 }
 
@@ -158,6 +158,6 @@ func DeletePost(c *gin.Context) {
 	data.UpdateBy = username.(string)
 
 	err := data.DeletePost()
-	utils.HasError(err, "删除失败", 500)
+	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", nil)
 }

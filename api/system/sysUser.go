@@ -107,7 +107,7 @@ func UpdateUser(c *gin.Context) {
 
 	result, err := data.UpdateUser()
 
-	utils.HasError(err, "修改失败", 500)
+	utils.HasError(err, "修改失败", 0)
 
 	app.OK(c, "修改成功", result)
 }
@@ -123,7 +123,7 @@ func UpdateUser(c *gin.Context) {
 func InsertUser(c *gin.Context) {
 	var sysuser models.SysUser
 	err := c.Bind(&sysuser)
-	utils.HasError(err, "非法数据格式", 500)
+	utils.HasError(err, "非法数据格式", 0)
 
 	errValidate := utils.StructValidate(sysuser)
 	utils.HasError(errValidate, "", 0)
@@ -138,7 +138,7 @@ func InsertUser(c *gin.Context) {
 	sysuser.UpdateTime = utils.GetCurrentTime()
 
 	id, err := sysuser.InsertUser()
-	utils.HasError(err, "添加失败", 500)
+	utils.HasError(err, "添加失败", 0)
 	app.OK(c, "添加成功", id)
 }
 
@@ -161,6 +161,6 @@ func DeleteUser(c *gin.Context) {
 	data.UpdateBy = username.(string)
 
 	err := data.DeleteUser()
-	utils.HasError(err, "删除失败", 500)
+	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", nil)
 }
