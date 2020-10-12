@@ -142,6 +142,7 @@ func initDicRouter(Router *gin.RouterGroup) {
 	{
 		APIRouter.GET("/dicttypelist", system.GetDictTypeList)
 		APIRouter.GET("/dicttype/:dictTypeId", system.GetDictTypeDetail)
+		APIRouter.GET("/dictmap", system.GetDictMap)
 		APIRouter.PUT("/dicttypeupdate", system.UpdateDictType)
 		APIRouter.DELETE("/dicttypedelete/:dictTypeId", system.DeleteDictType)
 		APIRouter.POST("/dicttypeadd", system.InsertDictType)

@@ -9,7 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "D:/my_code_core/go-core-frame/main.go",
+      "program": "/Users/huazi/Documents/myCode/go-core-frame/main.go",
       "env": {},
       "args": []
     }

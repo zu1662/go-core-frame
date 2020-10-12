@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// BaseModel 基础数据
 type BaseModel struct {
 	CreateBy   string    `json:"createBy"`   // 创建人
 	CreateTime time.Time `json:"createTime"` // 创建时间

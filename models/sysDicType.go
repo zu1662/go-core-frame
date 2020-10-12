@@ -114,3 +114,22 @@ func (e *SysDictType) DeleteDictType() (err error) {
 	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
 	return
 }
+
+// GetDictTypeAll 所有dictType信息
+func (e *SysDictType) GetDictTypeAll() ([]SysDictType, error) {
+	var doc []SysDictType
+
+	table := global.DB.Table(e.tableName())
+
+	if e.Status != "" {
+		table = table.Where("status = ?", e.Status)
+	}
+
+	table = table.Where("is_deleted = ?", 0)
+
+	err := table.Order("sort").Find(&doc).Error
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}

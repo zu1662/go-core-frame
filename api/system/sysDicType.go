@@ -5,6 +5,7 @@ import (
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
 	"go-core-frame/utils"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -160,4 +161,32 @@ func DeleteDictType(c *gin.Context) {
 	err := data.DeleteDictType()
 	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", nil)
+}
+
+// GetDictMap dict字典数据
+// @Summary dict字典数据
+// @Tags dict
+// @Success 200 {string} string	"{"code": 1, "msg": "ok", "data": {...}}"
+// @Router /dict/dicAll [get]
+func GetDictMap(c *gin.Context) {
+	var dictType models.SysDictType
+	dictTypeList, err := dictType.GetDictTypeAll()
+	utils.HasError(err, "获取信息失败", 0)
+
+	var mp = make(map[string]interface{})
+
+	for _, dictType := range dictTypeList {
+
+		var dictData = models.SysDictData{}
+		dictData.DictTypeID = strconv.Itoa(dictType.ID)
+		dictDataList, _ := dictData.GetDictDataAll()
+		mp[dictType.DictType] = dictDataList
+	}
+
+	app.Custom(c, gin.H{
+		"code": 1,
+		"msg":  "ok",
+		"data": mp,
+	})
+
 }

@@ -124,3 +124,26 @@ func (e *SysDictData) DeleteDictData() (err error) {
 	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
 	return
 }
+
+// GetDictDataAll List列表信息
+func (e *SysDictData) GetDictDataAll() ([]SysDictData, error) {
+	var doc []SysDictData
+
+	table := global.DB.Table(e.tableName())
+
+	if e.DictTypeID != "" {
+		table = table.Where("dict_type_id = ?", e.DictTypeID)
+	}
+
+	if e.Status != "" {
+		table = table.Where("status = ?", e.Status)
+	}
+
+	table = table.Where("is_deleted = ?", 0)
+
+	err := table.Order("sort").Find(&doc).Error
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
