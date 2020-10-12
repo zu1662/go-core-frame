@@ -29,6 +29,8 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 	initMenuRouter(Router)
 	// 角色路由
 	initRoleRouter(Router)
+	// 角色菜单路由
+	initRoleMenuRouter(Router)
 }
 
 // InitBaseRouter 基础路由，不需要鉴权
@@ -108,7 +110,7 @@ func initMenuRouter(Router *gin.RouterGroup) {
 	}
 }
 
-// initRoleRouter 岗位路由
+// initRoleRouter 角色路由
 func initRoleRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("role").
 		Use(middleware.JWTAuth())
@@ -118,5 +120,15 @@ func initRoleRouter(Router *gin.RouterGroup) {
 		APIRouter.PUT("/update", system.UpdateRole)
 		APIRouter.DELETE("/delete/:roleId", system.DeleteRole)
 		APIRouter.POST("/add", system.InsertRole)
+	}
+}
+
+// initRoleMenuRouter 角色菜单路由
+func initRoleMenuRouter(Router *gin.RouterGroup) {
+	APIRouter := Router.Group("rolemenu").
+		Use(middleware.JWTAuth())
+	{
+		APIRouter.GET("/list", system.GetRoleMenu)
+		APIRouter.POST("/update", system.UpdateRoleMenu)
 	}
 }
