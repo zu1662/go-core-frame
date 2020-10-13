@@ -35,6 +35,12 @@ func (e *SysAPI) GetAPI() (sysAPI SysAPI, err error) {
 	if e.ID > 0 {
 		table = table.Where("id = ?", e.ID)
 	}
+	if e.Path != "" {
+		table = table.Where("path = ?", e.Path)
+	}
+	if e.Method != "" {
+		table = table.Where("method = ?", e.Method)
+	}
 
 	table = table.Where("is_deleted = ?", 0)
 

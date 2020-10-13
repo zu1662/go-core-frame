@@ -35,6 +35,8 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 	initDicRouter(Router)
 	// API路由
 	initAPIRouter(Router)
+	// 角色接口路由
+	initRoleAPIRouter(Router)
 }
 
 // InitBaseRouter 基础路由，不需要鉴权
@@ -167,5 +169,15 @@ func initAPIRouter(Router *gin.RouterGroup) {
 		APIRouter.PUT("/update", system.UpdateAPI)
 		APIRouter.DELETE("/delete/:apiId", system.DeleteAPI)
 		APIRouter.POST("/add", system.InsertAPI)
+	}
+}
+
+// initRoleAPIRouter 角色接口路由
+func initRoleAPIRouter(Router *gin.RouterGroup) {
+	APIRouter := Router.Group("roleapi").
+		Use(middleware.JWTAuth())
+	{
+		APIRouter.GET("/list", system.GetRoleAPI)
+		APIRouter.POST("/update", system.UpdateRoleAPI)
 	}
 }
