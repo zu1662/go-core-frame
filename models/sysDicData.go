@@ -57,15 +57,15 @@ func (e *SysDictData) GetDictDataPage(pageSize int, pageIndex int) ([]SysDictDat
 	table := global.DB.Table(e.tableName())
 
 	if e.DictTypeID != "" {
-		table = table.Where("dict_type_id = ?", e.DictTypeID)
+		table = table.Where("dict_type_id LIKE ?", "%"+e.DictTypeID+"%")
 	}
 
 	if e.DictLabel != "" {
-		table = table.Where("dict_label = ?", e.DictLabel)
+		table = table.Where("dict_label LIKE ?", "%"+e.DictLabel+"%")
 	}
 
 	if e.DictValue != "" {
-		table = table.Where("dict_value = ?", e.DictValue)
+		table = table.Where("dict_value LIKE ?", "%"+e.DictValue+"%")
 	}
 
 	if e.Status != "" {

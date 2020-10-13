@@ -104,7 +104,7 @@ func (e *SysDeptView) GetDeptTree() ([]SysDeptView, error) {
 	table.Joins("left outer join sys_user on sys_dept.leader_id=sys_user.id")
 
 	if e.DeptName != "" {
-		table = table.Where("dept_name = ?", e.DeptName)
+		table = table.Where("dept_name LIKE ?", "%"+e.DeptName+"%")
 	}
 
 	if e.Status != "" {

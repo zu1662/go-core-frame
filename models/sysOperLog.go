@@ -51,13 +51,13 @@ func (e *OperLog) GetPage(pageSize int, pageIndex int) ([]OperLog, int64, error)
 
 	table := global.DB.Table(e.tableName())
 	if e.IPAddress != "" {
-		table = table.Where("ip_address = ?", e.IPAddress)
+		table = table.Where("ip_address LIKE ?", "%"+e.IPAddress+"%")
 	}
 	if e.Method != "" {
-		table = table.Where("method = ?", e.Method)
+		table = table.Where("method LIKE ?", "%"+e.Method+"%")
 	}
 	if e.OperName != "" {
-		table = table.Where("oper_name = ?", e.OperName)
+		table = table.Where("oper_name LIKE ?", "%"+e.OperName+"%")
 	}
 
 	table = table.Where("is_deleted = ?", 0)

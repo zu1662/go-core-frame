@@ -73,10 +73,6 @@ func SetLogger() gin.HandlerFunc {
 
 // LoggerToDB 保存请求日志到数据库
 func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, reqMethod string, latencyTime time.Duration, writer responseBodyWriter) {
-	api := models.API{}
-	api.Path = reqURI
-	api.Method = reqMethod
-	apiList, _ := api.Get()
 
 	ipLocation := utils.GetLocation(clientIP)
 	ua := user_agent.New(c.Request.Header.Get("User-Agent"))
@@ -102,6 +98,11 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 
 		loginLog.Create()
 	} else {
+		api := models.SysAPI{}
+		api.Path = reqURI
+		api.Method = reqMethod
+		nowAPI, apiErr := api.GetAPI()
+
 		operLog := models.OperLog{}
 		operLog.IPAddress = clientIP
 		operLog.IPLocation = ipLocation
@@ -117,8 +118,8 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 		body, _ := c.Get("body")
 		operLog.Params, _ = utils.StructToJsonStr(body)
 
-		if len(apiList) > 0 {
-			operLog.OperTitle = apiList[0].Name
+		if apiErr == nil {
+			operLog.OperTitle = nowAPI.Name
 		}
 
 		operLog.Create()

@@ -47,10 +47,10 @@ func (e *LoginLog) GetPage(pageSize int, pageIndex int) ([]LoginLog, int64, erro
 
 	table := global.DB.Table(e.tableName())
 	if e.IPAddress != "" {
-		table = table.Where("ip_address = ?", e.IPAddress)
+		table = table.Where("ip_address LIKE ?", "%"+e.IPAddress+"%")
 	}
 	if e.UserName != "" {
-		table = table.Where("user_name = ?", e.UserName)
+		table = table.Where("user_name LIKE ?", "%"+e.UserName+"%")
 	}
 
 	table = table.Where("is_deleted = ?", 0)

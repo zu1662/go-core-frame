@@ -51,11 +51,11 @@ func (e *SysDictType) GetDictTypePage(pageSize int, pageIndex int) ([]SysDictTyp
 	table := global.DB.Table(e.tableName())
 
 	if e.DictName != "" {
-		table = table.Where("dict_name = ?", e.DictName)
+		table = table.Where("dict_name LIKE ?", "%"+e.DictName+"%")
 	}
 
 	if e.DictType != "" {
-		table = table.Where("dict_type = ?", e.DictType)
+		table = table.Where("dict_type LIKE ?", "%"+e.DictType+"%")
 	}
 
 	if e.Status != "" {

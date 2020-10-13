@@ -52,11 +52,11 @@ func (e *SysPost) GetPage(pageSize int, pageIndex int) ([]SysPost, int64, error)
 	table := global.DB.Table(e.tableName())
 
 	if e.PostCode != "" {
-		table = table.Where("post_code = ?", e.PostCode)
+		table = table.Where("post_code LIKE ?", "%"+e.PostCode+"%")
 	}
 
 	if e.PostName != "" {
-		table = table.Where("post_name = ?", e.PostName)
+		table = table.Where("post_name LIKE ?", "%"+e.PostName+"%")
 	}
 
 	if e.Status != "" {

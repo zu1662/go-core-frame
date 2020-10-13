@@ -77,15 +77,15 @@ func (e *SysUserView) GetPage(pageSize int, pageIndex int) ([]SysUserView, int64
 	table.Joins("left outer join sys_dept on sys_user.dept_id=sys_dept.id")
 
 	if e.UserName != "" {
-		table = table.Where("sys_user.user_name = ?", e.UserName)
+		table = table.Where("sys_user.user_name LIKE ?", "%"+e.UserName+"%")
 	}
 
 	if e.UserCode != "" {
-		table = table.Where("sys_user.user_code = ?", e.UserCode)
+		table = table.Where("sys_user.user_code LIKE ?", "%"+e.UserCode+"%")
 	}
 
 	if e.Mobile != "" {
-		table = table.Where("sys_user.mobile = ?", e.Mobile)
+		table = table.Where("sys_user.mobile LIKE ?", "%"+e.Mobile+"%")
 	}
 
 	if e.Status != "" {
@@ -177,15 +177,15 @@ func (e *SysUserInfo) GetUserInfo() (SysUserInfo SysUserInfo, err error) {
 	table.Joins("left outer join sys_dept on sys_user.dept_id=sys_dept.id")
 
 	if e.UserCode != "" {
-		table.Where("user_code = ?", e.UserCode)
+		table.Where("user_code LIKE ?", "%"+e.UserCode+"%")
 	}
 
 	if e.UserName != "" {
-		table.Where("user_name = ?", e.UserName)
+		table.Where("user_name LIKE ?", "%"+e.UserName+"%")
 	}
 
 	if e.Mobile != "" {
-		table.Where("mobile = ?", e.Mobile)
+		table.Where("mobile LIKE ?", "%"+e.Mobile+"%")
 	}
 
 	if err = table.First(&SysUserInfo).Error; err != nil {

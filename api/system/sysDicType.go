@@ -11,7 +11,7 @@ import (
 )
 
 // GetDictTypeDetail 获取 dictype 详情信息
-// @Tags dic
+// @Tags dict
 // @Summary 获取 dicttype 详情信息
 // @Produce  application/json
 // @Param dictTypeId query int true "dictType编码"

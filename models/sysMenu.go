@@ -106,7 +106,7 @@ func (e *SysMenuView) GetMenuTree() ([]SysMenuView, error) {
 	table := global.DB.Table(e.SysMenu.tableName())
 
 	if e.Title != "" {
-		table = table.Where("dept_name = ?", e.Title)
+		table = table.Where("title LIKE ?", "%"+e.Title+"%")
 	}
 
 	table = table.Where("is_deleted = ?", 0)
@@ -116,25 +116,25 @@ func (e *SysMenuView) GetMenuTree() ([]SysMenuView, error) {
 		return nil, err
 	}
 
-	for _, nowDept := range doc {
-		if nowDept.Pid != 0 {
+	for _, nowMenu := range doc {
+		if nowMenu.Pid != 0 {
 			continue
 		}
-		newDept := recursionMenu(&doc, nowDept)
-		docView = append(docView, newDept)
+		newMenu := recursionMenu(&doc, nowMenu)
+		docView = append(docView, newMenu)
 	}
 	return docView, nil
 }
 
 // recursion 递归树结构
-func recursionMenu(deptList *[]SysMenuView, nowDept SysMenuView) SysMenuView {
+func recursionMenu(deptList *[]SysMenuView, nowMenu SysMenuView) SysMenuView {
 	for _, dept := range *deptList {
-		if dept.Pid == nowDept.ID {
-			newDept := recursionMenu(deptList, dept)
-			nowDept.Children = append(nowDept.Children, newDept)
+		if dept.Pid == nowMenu.ID {
+			newMenu := recursionMenu(deptList, dept)
+			nowMenu.Children = append(nowMenu.Children, newMenu)
 		} else {
 			continue
 		}
 	}
-	return nowDept
+	return nowMenu
 }

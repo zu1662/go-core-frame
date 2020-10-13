@@ -55,11 +55,11 @@ func (e *SysRole) GetPage(pageSize int, pageIndex int) ([]SysRole, int64, error)
 	table := global.DB.Table(e.tableName())
 
 	if e.RoleCode != "" {
-		table = table.Where("role_code = ?", e.RoleCode)
+		table = table.Where("role_code LIKE ?", "%"+e.RoleCode+"%")
 	}
 
 	if e.RoleName != "" {
-		table = table.Where("role_name = ?", e.RoleName)
+		table = table.Where("role_name LIKE ?", "%"+e.RoleName+"%")
 	}
 
 	if e.Status != "" {
