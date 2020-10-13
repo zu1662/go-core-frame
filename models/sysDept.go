@@ -97,32 +97,36 @@ func (e *SysDept) DeleteDept() (err error) {
 // GetDeptTree  部门树结构信息
 func (e *SysDeptView) GetDeptTree() ([]SysDeptView, error) {
 	var doc []SysDeptView
+	var docAll []SysDeptView
 	var docView []SysDeptView
 	table := global.DB.Table(e.SysDept.tableName())
 
+	// 预设join信息
 	table.Select([]string{"sys_dept.*", "sys_user.user_name as leader_name", "sys_user.mobile as leader_mobile", "sys_user.email as leader_email"})
 	table.Joins("left outer join sys_user on sys_dept.leader_id=sys_user.id")
 
-	if e.DeptName != "" {
-		table = table.Where("dept_name LIKE ?", "%"+e.DeptName+"%")
-	}
-
-	if e.Status != "" {
-		table = table.Where("status = ?", e.Status)
-	}
-
+	// 全部的信息
 	table = table.Where("sys_dept.is_deleted = ?", 0)
+	err := table.Order("sys_dept.sort").Find(&docAll).Error
+	if err != nil {
+		return nil, err
+	}
 
-	err := table.Order("sys_dept.sort").Find(&doc).Error
+	//搜索条件的信息
+	if e.ID > 0 {
+		table = table.Where("sys_dept.id = ?", e.ID)
+	}
+	table = table.Where("sys_dept.is_deleted = ?", 0)
+	err = table.Order("sys_dept.sort").Find(&doc).Error
 	if err != nil {
 		return nil, err
 	}
 
 	for _, nowDept := range doc {
-		if nowDept.Pid != 0 {
+		if e.ID == 0 && nowDept.Pid != 0 {
 			continue
 		}
-		newDept := recursionDept(&doc, nowDept)
+		newDept := recursionDept(&docAll, nowDept)
 		docView = append(docView, newDept)
 	}
 	return docView, nil

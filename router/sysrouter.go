@@ -33,6 +33,8 @@ func InitSystemRouter(Router *gin.RouterGroup) {
 	initRoleMenuRouter(Router)
 	// 字典路由
 	initDicRouter(Router)
+	// API路由
+	initAPIRouter(Router)
 }
 
 // InitBaseRouter 基础路由，不需要鉴权
@@ -152,5 +154,18 @@ func initDicRouter(Router *gin.RouterGroup) {
 		APIRouter.PUT("/dictdataupdate", system.UpdateDictData)
 		APIRouter.DELETE("/dictdatadelete/:dictDataId", system.DeleteDictData)
 		APIRouter.POST("/dictdataadd", system.InsertDictData)
+	}
+}
+
+// initAPIRouter 岗位路由
+func initAPIRouter(Router *gin.RouterGroup) {
+	APIRouter := Router.Group("api").
+		Use(middleware.JWTAuth())
+	{
+		APIRouter.GET("/info/:apiId", system.GetAPIDetail)
+		APIRouter.GET("/tree", system.GetAPITree)
+		APIRouter.PUT("/update", system.UpdateAPI)
+		APIRouter.DELETE("/delete/:apiId", system.DeleteAPI)
+		APIRouter.POST("/add", system.InsertAPI)
 	}
 }

@@ -101,26 +101,32 @@ func (e *SysMenu) DeleteMenu() (err error) {
 
 // GetMenuTree  部门树结构信息
 func (e *SysMenuView) GetMenuTree() ([]SysMenuView, error) {
-	var doc []SysMenuView
-	var docView []SysMenuView
 	table := global.DB.Table(e.SysMenu.tableName())
 
-	if e.Title != "" {
-		table = table.Where("title LIKE ?", "%"+e.Title+"%")
-	}
+	var doc []SysMenuView    //当前根据ID获取数据
+	var docAll []SysMenuView // 所有的数据
+	var docView []SysMenuView
 
 	table = table.Where("is_deleted = ?", 0)
+	err := table.Order("sort").Find(&docAll).Error
+	if err != nil {
+		return nil, err
+	}
 
-	err := table.Order("sort").Find(&doc).Error
+	if e.ID > 0 {
+		table = table.Where("id = ?", e.ID)
+	}
+	table = table.Where("is_deleted = ?", 0)
+	err = table.Order("sort").Find(&doc).Error
 	if err != nil {
 		return nil, err
 	}
 
 	for _, nowMenu := range doc {
-		if nowMenu.Pid != 0 {
+		if e.ID == 0 && nowMenu.Pid != 0 {
 			continue
 		}
-		newMenu := recursionMenu(&doc, nowMenu)
+		newMenu := recursionMenu(&docAll, nowMenu)
 		docView = append(docView, newMenu)
 	}
 	return docView, nil

@@ -119,8 +119,7 @@ func DeleteMenu(c *gin.Context) {
 // GetMenuTree 菜单tree
 // @Summary 菜单tree
 // @Tags menu
-// @Param name query string false "名称"
-// @Param title query string false "标题""
+// @Param menuId query string false "menuID"
 // @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
 // @Router /menu/tree [get]
 // @Security Authrization
@@ -128,8 +127,8 @@ func GetMenuTree(c *gin.Context) {
 	var data models.SysMenuView
 	var err error
 
-	data.Name = c.Request.FormValue("name")
-	data.Title = c.Request.FormValue("title")
+	ID, _ := utils.StringToInt(c.Request.FormValue("menuId"))
+	data.ID = ID
 	result, err := data.GetMenuTree()
 	utils.HasError(err, "", 0)
 

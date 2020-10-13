@@ -119,9 +119,7 @@ func DeleteAPI(c *gin.Context) {
 // GetAPITree api tree
 // @Summary api tree
 // @Tags api
-// @Param name query string false "名称"
-// @Param path query string false "路径""
-// @Param method query string false "方式""
+// @Param apiId query string false "apiId"
 // @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
 // @Router /api/tree [get]
 // @Security Authrization
@@ -129,9 +127,8 @@ func GetAPITree(c *gin.Context) {
 	var data models.SysAPIView
 	var err error
 
-	data.Name = c.Request.FormValue("name")
-	data.Path = c.Request.FormValue("path")
-	data.Method = c.Request.FormValue("method")
+	ID, _ := utils.StringToInt(c.Request.FormValue("apiId"))
+	data.ID = ID
 	result, err := data.GetAPITree()
 	utils.HasError(err, "", 0)
 

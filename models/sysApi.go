@@ -7,14 +7,14 @@ import (
 
 // SysAPI API信息结构
 type SysAPI struct {
-	ID     int    `gorm:"" json:"id"`              //数据库id
-	Pid    int    `json:"pid" valid:"required"`    // 父级id
-	Name   string `json:"name" valid:"required"`   // 名称
-	Path   string `json:"path" valid:"required"`   // 路径
-	Method string `json:"method" valid:"required"` // 请求类型
-	Type   string `json:"type" valid:"required"`   // 类型 0目录1接口
-	Sort   string `json:"sort"`                    //排序
-	Status string `json:"status"`                  // 状态
+	ID     int    `gorm:"" json:"id"`            //数据库id
+	Pid    int    `json:"pid" valid:"required"`  // 父级id
+	Name   string `json:"name" valid:"required"` // 名称
+	Path   string `json:"path" valid:"required"` // 路径
+	Method string `json:"method"`                // 请求类型
+	Type   string `json:"type" valid:"required"` // 类型 0目录1接口
+	Sort   string `json:"sort"`                  //排序
+	Status string `json:"status"`                // 状态
 	BaseModel
 }
 
@@ -93,21 +93,32 @@ func (e *SysAPI) DeleteAPI() (err error) {
 // GetAPITree  部门树结构信息
 func (e *SysAPIView) GetAPITree() ([]SysAPIView, error) {
 	var doc []SysAPIView
+	var docAll []SysAPIView
 	var docView []SysAPIView
 	table := global.DB.Table(e.SysAPI.tableName())
 
+	// 全部信息
 	table = table.Where("is_deleted = ?", 0)
+	err := table.Order("sort").Find(&docAll).Error
+	if err != nil {
+		return nil, err
+	}
 
-	err := table.Order("sort").Find(&doc).Error
+	// 搜索条件信息
+	if e.ID > 0 {
+		table = table.Where("id = ?", e.ID)
+	}
+	table = table.Where("is_deleted = ?", 0)
+	err = table.Order("sort").Find(&doc).Error
 	if err != nil {
 		return nil, err
 	}
 
 	for _, nowAPI := range doc {
-		if nowAPI.Pid != 0 {
+		if e.ID == 0 && nowAPI.Pid != 0 {
 			continue
 		}
-		newAPI := recursionAPI(&doc, nowAPI)
+		newAPI := recursionAPI(&docAll, nowAPI)
 		docView = append(docView, newAPI)
 	}
 	return docView, nil

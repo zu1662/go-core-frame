@@ -119,8 +119,7 @@ func DeleteDept(c *gin.Context) {
 // GetDeptTree 部门tree
 // @Summary 部门tree
 // @Tags dept
-// @Param deptName query string false "部门名称"
-// @Param status query string false "状态""
+// @Param deptId query string false "deptId"
 // @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
 // @Router /dept/tree [get]
 // @Security Authrization
@@ -128,8 +127,8 @@ func GetDeptTree(c *gin.Context) {
 	var data models.SysDeptView
 	var err error
 
-	data.DeptName = c.Request.FormValue("deptName")
-	data.Status = c.Request.FormValue("status")
+	ID, _ := utils.StringToInt(c.Request.FormValue("deptId"))
+	data.ID = ID
 	result, err := data.GetDeptTree()
 	utils.HasError(err, "", 0)
 
