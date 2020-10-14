@@ -47,6 +47,7 @@ func initBaseRouter(Router *gin.RouterGroup) {
 	BaseRouter := Router.Group("base")
 	{
 		BaseRouter.POST("/login", system.Login)
+		BaseRouter.GET("/captcha", system.GetCaptcha)
 		BaseRouter.Use(middleware.JWTAuth()).POST("/logout", system.Logout)
 		BaseRouter.Use(middleware.JWTAuth()).GET("/userinfo", system.GetUserInfo)
 	}

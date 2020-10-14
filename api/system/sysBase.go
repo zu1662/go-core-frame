@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"go-core-frame/global"
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
@@ -19,9 +20,26 @@ import (
 // @Success 200 {string} string "{"code":200,"data":{"token": "token value", "expire": "expire time"},"msg":"ok"}"
 // @Router /base/login [post]
 func Login(c *gin.Context) {
+	var captchaBody models.CaptchaBody
 	var data models.LoginForm
 	err := c.ShouldBindWith(&data, binding.JSON)
 	utils.HasError(err, "抱歉未找到相关信息", 0)
+
+	// 当环境不为dev时，开启captcha校验
+	if config.ApplicationConfig.Mode != "dev" {
+		if data.CaptchaID == "" {
+			err = errors.New("captchaId 不能为空")
+		}
+		if data.CaptchaCode == "" {
+			err = errors.New("captchaCode 不能为空")
+		}
+		utils.HasError(err, "", 0)
+		captchaFlag := captchaBody.VerifyCaptcha(data.CaptchaID, data.CaptchaCode)
+		if !captchaFlag {
+			err = errors.New("验证码校验失败")
+		}
+		utils.HasError(err, "", 0)
+	}
 
 	// 设置 username 便于 logger 使用
 	c.Set("username", data.Username)
@@ -49,6 +67,27 @@ func Login(c *gin.Context) {
 		"code": 1,
 		"msg":  "登陆成功",
 		"data": token,
+	})
+}
+
+// GetCaptcha 获取验证码
+// @Tags base
+// @Summary 获取验证码
+// @param type query string false "验证码类型"
+// @Produce  application/json
+// @Success 200 {string} string "{"code":200,"data":{"id": "captcha id", "captcha": "base64Captcha String"},"msg":"ok"}"
+// @Router /base/captcha [get]
+func GetCaptcha(c *gin.Context) {
+	captchaBody := models.CaptchaBody{}
+	captchaBody.CaptchaType = c.Request.FormValue("type")
+	id, b64s, err := captchaBody.GenerateCaptcha()
+	utils.HasError(err, "创建验证码失败", 0)
+
+	app.Custom(c, gin.H{
+		"code":    1,
+		"msg":     "ok",
+		"id":      id,
+		"captcha": b64s,
 	})
 }
 

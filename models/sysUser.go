@@ -7,8 +7,10 @@ import (
 
 // LoginForm 登录结构
 type LoginForm struct {
-	Username string `json:"username" valid:"required"`
-	Password string `json:"password" valid:"required"`
+	Username    string `json:"username" valid:"required"`
+	Password    string `json:"password" valid:"required"`
+	CaptchaID   string `json:"captchaId"`
+	CaptchaCode string `json:"captchaCode"`
 }
 
 // SysUser 用户信息结构

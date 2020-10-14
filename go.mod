@@ -15,6 +15,7 @@ require (
 	github.com/gogf/gf v1.13.4
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/mojocn/base64Captcha v1.3.1
 	github.com/mssola/user_agent v0.5.2
 	github.com/spf13/viper v1.7.1
 	github.com/swaggo/gin-swagger v1.2.0
@@ -23,6 +24,7 @@ require (
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
+	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5 // indirect
 	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb // indirect
 	golang.org/x/sys v0.0.0-20201009025420-dfb3f7c4e634 // indirect
 	golang.org/x/tools v0.0.0-20201010145503-6e5c6d77ddcc // indirect
