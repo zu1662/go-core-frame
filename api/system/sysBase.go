@@ -61,6 +61,9 @@ func Login(c *gin.Context) {
 		UUID:     loginUser.UUID,
 		Usercode: loginUser.UserCode,
 		Username: loginUser.UserName,
+		RoleID:   loginUser.RoleID,
+		PostID:   loginUser.PostID,
+		DeptID:   loginUser.DeptID,
 	})
 	utils.HasError(tokenErr, "创建token失败", 0)
 	app.Custom(c, gin.H{

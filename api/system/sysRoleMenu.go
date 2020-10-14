@@ -19,8 +19,8 @@ import (
 func GetRoleMenu(c *gin.Context) {
 	var data models.SysRoleMenu
 
-	roleID := c.Request.FormValue("roleId")
-	if roleID == "" {
+	roleID, _ := utils.StringToInt(c.Request.FormValue("roleId"))
+	if roleID <= 0 {
 		err := errors.New("roleId 不能为空")
 		utils.HasError(err, "", 0)
 	}
@@ -29,7 +29,7 @@ func GetRoleMenu(c *gin.Context) {
 	result, err := data.GetRoleMenu()
 	utils.HasError(err, "", 0)
 
-	var arr []string
+	var arr []int
 	for _, sysRoleMenu := range result {
 		arr = append(arr, sysRoleMenu.MenuID)
 	}
@@ -56,7 +56,7 @@ func UpdateRoleMenu(c *gin.Context) {
 	err := c.Bind(&data)
 	utils.HasError(err, "", 0)
 
-	if data.RoleID == "" {
+	if data.RoleID <= 0 {
 		err = errors.New("roleId 不能为空")
 		utils.HasError(err, "", 0)
 	}

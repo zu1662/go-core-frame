@@ -25,6 +25,7 @@ type SysMenu struct {
 // SysMenuView 菜单树结构
 type SysMenuView struct {
 	SysMenu
+	AuthFlag int           `json:"authFlag"`          //是否存在权限
 	Children []SysMenuView `json:"children" gorm:"-"` // 子级
 }
 
@@ -100,7 +101,7 @@ func (e *SysMenu) DeleteMenu() (err error) {
 }
 
 // GetMenuTree  部门树结构信息
-func (e *SysMenuView) GetMenuTree() ([]SysMenuView, error) {
+func (e *SysMenuView) GetMenuTree(token string) ([]SysMenuView, error) {
 	table := global.DB.Table(e.SysMenu.tableName())
 
 	var doc []SysMenuView    //当前根据ID获取数据
@@ -122,21 +123,35 @@ func (e *SysMenuView) GetMenuTree() ([]SysMenuView, error) {
 		return nil, err
 	}
 
+	// 从redis获取用户信息
+	userJSON, _ := global.Redis.Get(token).Result()
+	var userClaims UserClaims
+	userClaims.UnmarshalBinary([]byte(userJSON))
+
 	for _, nowMenu := range doc {
 		if e.ID == 0 && nowMenu.Pid != 0 {
 			continue
 		}
-		newMenu := recursionMenu(&docAll, nowMenu)
+		newMenu := recursionMenu(&docAll, nowMenu, userClaims.RoleID)
 		docView = append(docView, newMenu)
 	}
 	return docView, nil
 }
 
 // recursion 递归树结构
-func recursionMenu(deptList *[]SysMenuView, nowMenu SysMenuView) SysMenuView {
-	for _, dept := range *deptList {
-		if dept.Pid == nowMenu.ID {
-			newMenu := recursionMenu(deptList, dept)
+func recursionMenu(menuList *[]SysMenuView, nowMenu SysMenuView, roleID int) SysMenuView {
+	for _, menu := range *menuList {
+		if menu.Pid == nowMenu.ID {
+			var sysRoleMenu SysRoleMenu
+			sysRoleMenu.MenuID = menu.ID
+			sysRoleMenu.RoleID = roleID
+			roleMenuList, _ := sysRoleMenu.GetRoleMenu()
+			if len(roleMenuList) == 0 {
+				nowMenu.AuthFlag = 0
+			} else {
+				nowMenu.AuthFlag = 1
+			}
+			newMenu := recursionMenu(menuList, menu, roleID)
 			nowMenu.Children = append(nowMenu.Children, newMenu)
 		} else {
 			continue

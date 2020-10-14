@@ -42,6 +42,9 @@ type UserClaims struct {
 	UUID     string `json:"uuid"`
 	Username string `json:"username"`
 	Usercode string `json:"usercode"`
+	RoleID   int    `json:"roleId"`
+	DeptID   int    `json:"deptId"`
+	PostID   int    `json:"postId"`
 }
 
 // MarshalBinary json转化
@@ -78,6 +81,9 @@ func (j *JWT) CreateToken(userClaims *UserClaims) (*Token, error) {
 			UUID:     userClaims.UUID,
 			Username: userClaims.Username,
 			Usercode: userClaims.Usercode,
+			RoleID:   userClaims.RoleID,
+			PostID:   userClaims.PostID,
+			DeptID:   userClaims.DeptID,
 		},
 		BufferTime: j.BufferTime,
 		StandardClaims: jwt.StandardClaims{

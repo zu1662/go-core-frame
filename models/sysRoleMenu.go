@@ -6,16 +6,16 @@ import (
 
 // SysRoleMenu 部门菜单关联结构
 type SysRoleMenu struct {
-	ID     int    `gorm:"" json:"id"`              //数据库id
-	RoleID string `json:"roleId" valid:"required"` // 角色ID
-	MenuID string `json:"menuId" valid:"required"` // 菜单ID
+	ID     int `gorm:"" json:"id"`              //数据库id
+	RoleID int `json:"roleId" valid:"required"` // 角色ID
+	MenuID int `json:"menuId" valid:"required"` // 菜单ID
 	BaseModel
 }
 
 // SysRoleMenuView 部门菜单列表关联结构
 type SysRoleMenuView struct {
-	RoleID   string   `json:"roleId" valid:"required"`   // 角色ID
-	MenuList []string `json:"menuList" valid:"required"` // 菜单ID
+	RoleID   int   `json:"roleId" valid:"required"`   // 角色ID
+	MenuList []int `json:"menuList" valid:"required"` // 菜单ID
 	BaseModel
 }
 
@@ -35,11 +35,11 @@ func (e *SysRoleMenu) GetRoleMenu() ([]SysRoleMenu, error) {
 
 	table := global.DB.Table(e.tableName())
 
-	if e.RoleID != "" {
+	if e.RoleID > 0 {
 		table = table.Where("role_id = ?", e.RoleID)
 	}
 
-	if e.MenuID != "" {
+	if e.MenuID > 0 {
 		table = table.Where("menu_id = ?", e.MenuID)
 	}
 
@@ -56,7 +56,7 @@ func (e *SysRoleMenu) GetRoleMenu() ([]SysRoleMenu, error) {
 func (e *SysRoleMenuView) UpdateRoleMenu() (err error) {
 	table := global.DB.Table(e.tableName())
 	// 先删除之前的roleId关联的数据
-	if e.RoleID != "" {
+	if e.RoleID > 0 {
 		if err = table.Where("role_id = ?", e.RoleID).Delete(SysRoleMenu{}).Error; err != nil {
 			return
 		}

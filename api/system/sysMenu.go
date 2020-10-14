@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
+	"go-core-frame/pkg/config"
 	"go-core-frame/utils"
 
 	"github.com/gin-gonic/gin"
@@ -124,12 +125,13 @@ func DeleteMenu(c *gin.Context) {
 // @Router /menu/tree [get]
 // @Security Authrization
 func GetMenuTree(c *gin.Context) {
+	token := c.Request.Header.Get(config.JWTConfig.HeaderName)
 	var data models.SysMenuView
 	var err error
 
 	ID, _ := utils.StringToInt(c.Request.FormValue("menuId"))
 	data.ID = ID
-	result, err := data.GetMenuTree()
+	result, err := data.GetMenuTree(token)
 	utils.HasError(err, "", 0)
 
 	app.Custom(c, gin.H{
