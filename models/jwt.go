@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"go-core-frame/global"
 	"go-core-frame/pkg/config"
@@ -38,9 +39,19 @@ type Token struct {
 
 // UserClaims  用户信息载体结构
 type UserClaims struct {
-	UUID     string
-	Username string
-	Usercode string
+	UUID     string `json:"uuid"`
+	Username string `json:"username"`
+	Usercode string `json:"usercode"`
+}
+
+// MarshalBinary json转化
+func (s *UserClaims) MarshalBinary() ([]byte, error) {
+	return json.Marshal(s)
+}
+
+// UnmarshalBinary json转化
+func (s *UserClaims) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, s)
 }
 
 // JWTClaims JWT 参数
@@ -85,8 +96,8 @@ func (j *JWT) CreateToken(userClaims *UserClaims) (*Token, error) {
 		Expire: claims.StandardClaims.ExpiresAt,
 	}
 
-	// 把Token 存储在redis内
-	err = global.Redis.Set(claims.UserClaims.Usercode, token, time.Duration(j.Timeout)*time.Second).Err()
+	// 把 User信息 存储在redis内
+	err = global.Redis.Set(token, userClaims, time.Duration(j.Timeout)*time.Second).Err()
 
 	return nowToken, err
 }

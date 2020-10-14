@@ -4,6 +4,7 @@ import (
 	"go-core-frame/global"
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
+	"go-core-frame/pkg/config"
 	"go-core-frame/utils"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +41,7 @@ func Login(c *gin.Context) {
 		Usercode: loginUser.UserCode,
 		Username: loginUser.UserName,
 	})
-	utils.HasError(tokenErr, "获取Token失败", 0)
+	utils.HasError(tokenErr, "创建token失败", 0)
 	app.Custom(c, gin.H{
 		"code": 1,
 		"msg":  "登陆成功",
@@ -57,9 +58,9 @@ func Login(c *gin.Context) {
 // @Security Authorization
 func Logout(c *gin.Context) {
 
-	username, _ := c.Get("username")
+	token := c.Request.Header.Get(config.JWTConfig.HeaderName)
 
-	err := global.Redis.Do("DEL", username).Err()
+	err := global.Redis.SAdd("tokenBlock", token).Err()
 	if err != nil {
 		utils.HasError(err, "退出失败", 0)
 	}

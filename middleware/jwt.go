@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"errors"
 	"go-core-frame/global"
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
@@ -22,13 +21,20 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		// if service.IsBlacklist(token) {
-		// 	response.Result(response.ERROR, gin.H{
-		// 		"reload": true,
-		// 	}, "您的帐户异地登陆或令牌失效", c)
-		// 	c.Abort()
-		// 	return
-		// }
+
+		// 获取 redis 内的 token
+		IsBlacklist, _ := global.Redis.SIsMember("tokenBlock", token).Result()
+		if IsBlacklist {
+			app.Error(c, 401, models.ErrTokenEmpty, "您的帐户异地登陆或令牌失效")
+			c.Abort()
+			return
+		}
+
+		// 从redis获取用户信息
+		userJSON, _ := global.Redis.Get(token).Result()
+		var userClaims models.UserClaims
+		userClaims.UnmarshalBinary([]byte(userJSON))
+
 		j := models.NewJWT()
 		claims, err := j.ParseToken(token)
 
@@ -54,18 +60,6 @@ func JWTAuth() gin.HandlerFunc {
 
 		// 设置 username 便于 logger 使用
 		c.Set("username", claims.UserClaims.Usercode)
-
-		// 获取 redis 内的 token
-		redisToken, _ := global.Redis.Get(claims.UserClaims.Usercode).Result()
-		if redisToken == "" || redisToken != token {
-			app.Error(c, 401, errors.New("无法获取对应Token信息，请重新登录"), "")
-			c.Abort()
-			return
-		} else if redisToken != token {
-			app.Error(c, 401, errors.New("Token不一致，请重新登录"), "")
-			c.Abort()
-			return
-		}
 
 		c.Next()
 	}
