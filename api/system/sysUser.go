@@ -137,6 +137,15 @@ func InsertUser(c *gin.Context) {
 	sysuser.UpdateBy = username.(string)
 	sysuser.UpdateTime = utils.GetCurrentTime()
 
+	// 生成用户 uuid
+	uuid := utils.GetUUID()
+	sysuser.UUID = uuid
+
+	// 新建账号默认密码为123456
+	md5Str := utils.GetMD5HashCode([]byte("123456"))
+	// 密码 SHA256 加密
+	sysuser.Password = utils.GetSHA256HashCode([]byte(md5Str))
+
 	id, err := sysuser.InsertUser()
 	utils.HasError(err, "添加失败", 0)
 	app.OK(c, "添加成功", id)

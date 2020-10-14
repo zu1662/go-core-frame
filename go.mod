@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-playground/validator/v10 v10.4.0 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/gogf/gf v1.13.4
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect

@@ -29,6 +29,9 @@ func Login(c *gin.Context) {
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
 
+	// 用户密码 再次加密
+	data.Password = utils.GetSHA256HashCode([]byte(data.Password))
+
 	sysUser := models.SysUser{}
 	sysUser.UserName = data.Username
 	sysUser.Password = data.Password
