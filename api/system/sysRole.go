@@ -77,6 +77,32 @@ func GetRoleList(c *gin.Context) {
 	})
 }
 
+// GetRoleAll 角色列表
+// @Summary 角色列表
+// @Tags role
+// @Param roleCode query string false "角色编码"
+// @Param roleName query string false "角色名称"
+// @Param status query string false "状态""
+// @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
+// @Router /role/listall [get]
+// @Security Authrization
+func GetRoleAll(c *gin.Context) {
+	var data models.SysRole
+	var err error
+
+	data.RoleCode = c.Request.FormValue("roleCode")
+	data.RoleName = c.Request.FormValue("roleName")
+	data.Status = c.Request.FormValue("status")
+	result, err := data.GetList()
+	utils.HasError(err, "", 0)
+
+	app.Custom(c, gin.H{
+		"code": 1,
+		"msg":  "ok",
+		"data": result,
+	})
+}
+
 // UpdateRole 更新角色
 // @Summary 更新角色
 // @Tags role

@@ -61,6 +61,7 @@ func GetUserList(c *gin.Context) {
 	data.UserName = c.Request.FormValue("userName")
 	data.Mobile = c.Request.FormValue("mobile")
 	data.Status = c.Request.FormValue("status")
+	data.DeptID, _ = utils.StringToInt(c.Request.FormValue("deptId"))
 	result, count, err := data.GetPage(pageSize, pageIndex)
 	utils.HasError(err, "", 0)
 
@@ -95,8 +96,40 @@ func UpdateUser(c *gin.Context) {
 		utils.HasError(err, "", 0)
 	}
 
-	errValidate := utils.StructValidate(data)
-	utils.HasError(errValidate, "", 0)
+	username, ok := c.Get("username")
+	if !ok {
+		username = "-"
+	}
+	data.UpdateBy = username.(string)
+	data.UpdateTime = utils.GetCurrentTime()
+
+	result, err := data.UpdateUser()
+
+	utils.HasError(err, "修改失败", 0)
+
+	app.OK(c, "修改成功", result)
+}
+
+// ResetUserPsw 更新用户密码
+// @Summary 更新用户密码
+// @Tags user
+// @Param data body models.SysUser true "body"
+// @Success 200 {string} string	"{"code": 1, "msg": "修改成功"}"
+// @Success 200 {string} string	"{"code": 0, "msg": "修改失败"}"
+// @Router /user/resetpsw [put]
+// @Security Authrization
+func ResetUserPsw(c *gin.Context) {
+	var data models.SysUserWithPsw
+	err := c.Bind(&data)
+	utils.HasError(err, "", 0)
+
+	if data.ID <= 0 {
+		err = errors.New("id 不能为空")
+		utils.HasError(err, "", 0)
+	}
+
+	// 用户密码 再次加密
+	data.Password = utils.GetSHA256HashCode([]byte(data.Password))
 
 	username, ok := c.Get("username")
 	if !ok {
@@ -121,7 +154,7 @@ func UpdateUser(c *gin.Context) {
 // @Router /api/v1/user/add [post]
 // @Security Authrization
 func InsertUser(c *gin.Context) {
-	var sysuser models.SysUser
+	var sysuser models.SysUserWithPsw
 	err := c.Bind(&sysuser)
 	utils.HasError(err, "非法数据格式", 0)
 
@@ -159,17 +192,18 @@ func InsertUser(c *gin.Context) {
 // @Router /user/delete/{userId} [delete]
 // @Security Authrization
 func DeleteUser(c *gin.Context) {
-	userID, _ := utils.StringToInt(c.Param("userId"))
+	idsStr := c.Param("userId")
 
 	var data models.SysUser
-	data.ID = userID
+	userIds := utils.IdsStrToIdsIntGroup(idsStr)
+
 	username, ok := c.Get("username")
 	if !ok {
 		username = "-"
 	}
 	data.UpdateBy = username.(string)
 
-	err := data.DeleteUser()
+	err := data.DeleteUser(userIds)
 	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", nil)
 }

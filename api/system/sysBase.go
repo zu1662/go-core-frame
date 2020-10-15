@@ -50,7 +50,7 @@ func Login(c *gin.Context) {
 	// 用户密码 再次加密
 	data.Password = utils.GetSHA256HashCode([]byte(data.Password))
 
-	sysUser := models.SysUser{}
+	sysUser := models.SysUserWithPsw{}
 	sysUser.UserName = data.Username
 	sysUser.Password = data.Password
 	loginUser, getErr := sysUser.GetUser()

@@ -78,6 +78,33 @@ func (e *SysRole) GetPage(pageSize int, pageIndex int) ([]SysRole, int64, error)
 	return doc, count, nil
 }
 
+// GetList 所有role信息
+func (e *SysRole) GetList() ([]SysRole, error) {
+	var doc []SysRole
+
+	table := global.DB.Table(e.tableName())
+
+	if e.RoleCode != "" {
+		table = table.Where("role_code LIKE ?", "%"+e.RoleCode+"%")
+	}
+
+	if e.RoleName != "" {
+		table = table.Where("role_name LIKE ?", "%"+e.RoleName+"%")
+	}
+
+	if e.Status != "" {
+		table = table.Where("status = ?", e.Status)
+	}
+
+	table = table.Where("is_deleted = ?", 0)
+
+	err := table.Order("sort").Find(&doc).Error
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
+
 //UpdateRole 修改
 func (e *SysRole) UpdateRole() (update SysRole, err error) {
 	table := global.DB.Table(e.tableName())

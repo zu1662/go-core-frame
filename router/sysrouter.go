@@ -73,6 +73,7 @@ func initUserRouter(Router *gin.RouterGroup) {
 		APIRouter.GET("/info/:userId", system.GetUserDetail)
 		APIRouter.GET("/list", system.GetUserList)
 		APIRouter.PUT("/update", system.UpdateUser)
+		APIRouter.PUT("/resetpsw", system.ResetUserPsw)
 		APIRouter.DELETE("/delete/:userId", system.DeleteUser)
 		APIRouter.POST("/add", system.InsertUser)
 	}
@@ -98,13 +99,14 @@ func initPostRouter(Router *gin.RouterGroup) {
 	{
 		APIRouter.GET("/info/:postId", system.GetPostDetail)
 		APIRouter.GET("/list", system.GetPostList)
+		APIRouter.GET("/listall", system.GetPostAll)
 		APIRouter.PUT("/update", system.UpdatePost)
 		APIRouter.DELETE("/delete/:postId", system.DeletePost)
 		APIRouter.POST("/add", system.InsertPost)
 	}
 }
 
-// initPostRouter 岗位路由
+// initMenuRouter 岗位路由
 func initMenuRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("menu").
 		Use(middleware.JWTAuth())
@@ -124,6 +126,7 @@ func initRoleRouter(Router *gin.RouterGroup) {
 	{
 		APIRouter.GET("/info/:roleId", system.GetRoleDetail)
 		APIRouter.GET("/list", system.GetRoleList)
+		APIRouter.GET("/listall", system.GetRoleAll)
 		APIRouter.PUT("/update", system.UpdateRole)
 		APIRouter.DELETE("/delete/:roleId", system.DeleteRole)
 		APIRouter.POST("/add", system.InsertRole)

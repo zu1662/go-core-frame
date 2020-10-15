@@ -19,7 +19,6 @@ type SysUser struct {
 	UUID     string `json:"uuid"`                      // UUID
 	UserCode string `json:"userCode" valid:"required"` // 编码
 	UserName string `json:"userName" valid:"required"` // 名称
-	Password string `json:"password"`                  // 密码
 	Mobile   string `json:"mobile" valid:"required"`   // 手机号
 	Avatar   string `json:"avatar"`                    //头像
 	Gender   string `json:"gender"`                    //性别
@@ -29,6 +28,12 @@ type SysUser struct {
 	PostID   int    `json:"postId"`                    //职位编码
 	Status   string `json:"status"`                    // 状态
 	BaseModel
+}
+
+// SysUserWithPsw 包含密码的用户信息
+type SysUserWithPsw struct {
+	SysUser
+	Password string `json:"password"` // 密码
 }
 
 // SysUserView 用户冗余信息体
@@ -45,7 +50,7 @@ func (e *SysUser) tableName() string {
 }
 
 // GetUser 获取用户数据
-func (e *SysUser) GetUser() (sysUser SysUser, err error) {
+func (e *SysUserWithPsw) GetUser() (sysUser SysUserWithPsw, err error) {
 	table := global.DB.Table(e.tableName())
 
 	if e.ID > 0 {
@@ -58,6 +63,26 @@ func (e *SysUser) GetUser() (sysUser SysUser, err error) {
 
 	if e.Password != "" {
 		table = table.Where("password = ?", e.Password)
+	}
+
+	table = table.Where("is_deleted = ?", 0)
+
+	if err = table.First(&sysUser).Error; err != nil {
+		return
+	}
+	return
+}
+
+// GetUser 获取用户不带密码详情
+func (e *SysUser) GetUser() (sysUser SysUser, err error) {
+	table := global.DB.Table(e.tableName())
+
+	if e.ID > 0 {
+		table = table.Where("id = ?", e.ID)
+	}
+
+	if e.UserName != "" {
+		table = table.Where("user_code = ?", e.UserName)
 	}
 
 	table = table.Where("is_deleted = ?", 0)
@@ -94,11 +119,15 @@ func (e *SysUserView) GetPage(pageSize int, pageIndex int) ([]SysUserView, int64
 		table = table.Where("sys_user.status = ?", e.Status)
 	}
 
+	if e.DeptID > 0 {
+		table = table.Where("sys_user.dept_id = ?", e.DeptID)
+	}
+
 	table = table.Where("sys_user.is_deleted = ?", 0)
 
 	var count int64
 
-	err := table.Order("sys_user.id desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
+	err := table.Order("sys_user.id").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
 	err = table.Count(&count).Error
 	if err != nil {
 		return nil, 0, err
@@ -129,6 +158,7 @@ func (e *SysUser) InsertUser() (id int, err error) {
 	table := global.DB.Table(e.tableName())
 	// check 用户名
 	var count int64
+	table.Where("is_deleted = ?", 0)
 	table.Where("user_name = ?", e.UserName).Count(&count)
 	if count > 0 {
 		err = errors.New("账户已存在！")
@@ -144,9 +174,9 @@ func (e *SysUser) InsertUser() (id int, err error) {
 }
 
 // DeleteUser SysUser 逻辑删除
-func (e *SysUser) DeleteUser() (err error) {
+func (e *SysUser) DeleteUser(userIds []int) (err error) {
 	table := global.DB.Table(e.tableName())
-	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	err = table.Where("id in (?)", userIds).Update("is_deleted", 1).Error
 	return
 }
 

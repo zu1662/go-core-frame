@@ -75,6 +75,33 @@ func (e *SysPost) GetPage(pageSize int, pageIndex int) ([]SysPost, int64, error)
 	return doc, count, nil
 }
 
+// GetAll List列表信息
+func (e *SysPost) GetAll() ([]SysPost, error) {
+	var doc []SysPost
+
+	table := global.DB.Table(e.tableName())
+
+	if e.PostCode != "" {
+		table = table.Where("post_code LIKE ?", "%"+e.PostCode+"%")
+	}
+
+	if e.PostName != "" {
+		table = table.Where("post_name LIKE ?", "%"+e.PostName+"%")
+	}
+
+	if e.Status != "" {
+		table = table.Where("status = ?", e.Status)
+	}
+
+	table = table.Where("is_deleted = ?", 0)
+
+	err := table.Order("sort").Find(&doc).Error
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
+
 // UpdatePost 岗位修改
 func (e *SysPost) UpdatePost() (update SysPost, err error) {
 	table := global.DB.Table(e.tableName())

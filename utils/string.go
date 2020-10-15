@@ -8,11 +8,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 )
+
+// IdsStrToIdsIntGroup IdsStrToIdsIntGroup
+func IdsStrToIdsIntGroup(keys string) []int {
+	IDS := make([]int, 0)
+	ids := strings.Split(keys, ",")
+	for i := 0; i < len(ids); i++ {
+		ID, _ := StringToInt(ids[i])
+		IDS = append(IDS, ID)
+	}
+	return IDS
+}
 
 // StringToInt64 StringToInt64
 func StringToInt64(e string) (int64, error) {

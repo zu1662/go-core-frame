@@ -77,6 +77,32 @@ func GetPostList(c *gin.Context) {
 	})
 }
 
+// GetPostAll 岗位列表
+// @Summary 岗位列表
+// @Tags post
+// @Param postCode query string false "岗位编码"
+// @Param postName query string false "岗位名称"
+// @Param status query string false "状态""
+// @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
+// @Router /post/list [get]
+// @Security Authrization
+func GetPostAll(c *gin.Context) {
+	var data models.SysPost
+	var err error
+
+	data.PostCode = c.Request.FormValue("postCode")
+	data.PostName = c.Request.FormValue("postName")
+	data.Status = c.Request.FormValue("status")
+	result, err := data.GetAll()
+	utils.HasError(err, "", 0)
+
+	app.Custom(c, gin.H{
+		"code": 1,
+		"msg":  "ok",
+		"data": result,
+	})
+}
+
 // UpdatePost 更新岗位
 // @Summary 更新岗位
 // @Tags post

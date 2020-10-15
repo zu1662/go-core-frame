@@ -17,7 +17,7 @@ func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get(config.JWTConfig.HeaderName)
 		if token == "" {
-			app.Error(c, 401, models.ErrTokenEmpty, "Token为空，请重新登录")
+			app.WithCode(c, 401, models.ErrTokenEmpty, "Token为空，请重新登录")
 			c.Abort()
 			return
 		}
@@ -25,7 +25,7 @@ func JWTAuth() gin.HandlerFunc {
 		// 获取 redis 内的 token
 		IsBlacklist, _ := global.Redis.SIsMember("tokenBlock", token).Result()
 		if IsBlacklist {
-			app.Error(c, 401, models.ErrTokenEmpty, "您的帐户异地登陆或令牌失效")
+			app.WithCode(c, 401, models.ErrTokenEmpty, "您的帐户异地登陆或令牌失效")
 			c.Abort()
 			return
 		}
@@ -49,11 +49,11 @@ func JWTAuth() gin.HandlerFunc {
 					c.Next()
 					return
 				}
-				app.Error(c, 401, models.ErrTokenExpired, "Token已失效，请重新登录")
+				app.WithCode(c, 401, models.ErrTokenExpired, "Token已失效，请重新登录")
 				c.Abort()
 				return
 			}
-			app.Error(c, 401, err, "无法解析Token，请重新登录")
+			app.WithCode(c, 401, err, "无法解析Token，请重新登录")
 			c.Abort()
 			return
 		}
