@@ -101,7 +101,7 @@ func (e *SysMenu) DeleteMenu() (err error) {
 }
 
 // GetMenuTree  部门树结构信息
-func (e *SysMenuView) GetMenuTree(token string) ([]SysMenuView, error) {
+func (e *SysMenuView) GetMenuTree(roleID int) ([]SysMenuView, error) {
 	table := global.DB.Table(e.SysMenu.tableName())
 
 	var doc []SysMenuView    //当前根据ID获取数据
@@ -123,16 +123,11 @@ func (e *SysMenuView) GetMenuTree(token string) ([]SysMenuView, error) {
 		return nil, err
 	}
 
-	// 从redis获取用户信息
-	userJSON, _ := global.Redis.Get(token).Result()
-	var userClaims UserClaims
-	userClaims.UnmarshalBinary([]byte(userJSON))
-
 	for _, nowMenu := range doc {
 		if e.ID == 0 && nowMenu.Pid != 0 {
 			continue
 		}
-		newMenu := recursionMenu(&docAll, nowMenu, userClaims.RoleID)
+		newMenu := recursionMenu(&docAll, nowMenu, roleID)
 		docView = append(docView, newMenu)
 	}
 	return docView, nil
@@ -140,17 +135,17 @@ func (e *SysMenuView) GetMenuTree(token string) ([]SysMenuView, error) {
 
 // recursion 递归树结构
 func recursionMenu(menuList *[]SysMenuView, nowMenu SysMenuView, roleID int) SysMenuView {
+	var sysRoleMenu SysRoleMenu
+	sysRoleMenu.MenuID = nowMenu.ID
+	sysRoleMenu.RoleID = roleID
+	roleMenuList, _ := sysRoleMenu.GetRoleMenu()
+	if len(roleMenuList) == 0 {
+		nowMenu.AuthFlag = 0
+	} else {
+		nowMenu.AuthFlag = 1
+	}
 	for _, menu := range *menuList {
 		if menu.Pid == nowMenu.ID {
-			var sysRoleMenu SysRoleMenu
-			sysRoleMenu.MenuID = menu.ID
-			sysRoleMenu.RoleID = roleID
-			roleMenuList, _ := sysRoleMenu.GetRoleMenu()
-			if len(roleMenuList) == 0 {
-				nowMenu.AuthFlag = 0
-			} else {
-				nowMenu.AuthFlag = 1
-			}
 			newMenu := recursionMenu(menuList, menu, roleID)
 			nowMenu.Children = append(nowMenu.Children, newMenu)
 		} else {

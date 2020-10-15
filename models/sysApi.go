@@ -132,9 +132,9 @@ func (e *SysAPIView) GetAPITree() ([]SysAPIView, error) {
 
 // recursion 递归树结构
 func recursionAPI(apiList *[]SysAPIView, nowAPI SysAPIView) SysAPIView {
-	for _, dept := range *apiList {
-		if dept.Pid == nowAPI.ID {
-			newAPI := recursionAPI(apiList, dept)
+	for _, api := range *apiList {
+		if api.Pid == nowAPI.ID {
+			newAPI := recursionAPI(apiList, api)
 			nowAPI.Children = append(nowAPI.Children, newAPI)
 		} else {
 			continue

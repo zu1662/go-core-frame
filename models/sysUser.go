@@ -179,15 +179,15 @@ func (e *SysUserInfo) GetUserInfo() (SysUserInfo SysUserInfo, err error) {
 	table.Joins("left outer join sys_dept on sys_user.dept_id=sys_dept.id")
 
 	if e.UserCode != "" {
-		table.Where("user_code LIKE ?", "%"+e.UserCode+"%")
+		table.Where("user_code = ?", e.UserCode)
 	}
 
 	if e.UserName != "" {
-		table.Where("user_name LIKE ?", "%"+e.UserName+"%")
+		table.Where("user_name = ?", e.UserName)
 	}
 
 	if e.Mobile != "" {
-		table.Where("mobile LIKE ?", "%"+e.Mobile+"%")
+		table.Where("mobile = ?", e.Mobile)
 	}
 
 	if err = table.First(&SysUserInfo).Error; err != nil {
