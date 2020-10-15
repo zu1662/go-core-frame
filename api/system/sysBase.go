@@ -85,12 +85,13 @@ func GetCaptcha(c *gin.Context) {
 	captchaBody.CaptchaType = c.Request.FormValue("type")
 	id, b64s, err := captchaBody.GenerateCaptcha()
 	utils.HasError(err, "创建验证码失败", 0)
-
+	var mp = make(map[string]interface{})
+	mp["id"] = id
+	mp["captcha"] = b64s
 	app.Custom(c, gin.H{
-		"code":    1,
-		"msg":     "ok",
-		"id":      id,
-		"captcha": b64s,
+		"code": 1,
+		"msg":  "ok",
+		"data": mp,
 	})
 }
 

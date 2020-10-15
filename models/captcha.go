@@ -34,7 +34,8 @@ func (e *CaptchaBody) GenerateCaptcha() (string, string, error) {
 	case "math":
 		e.DriverMath = base64Captcha.NewDriverMath(46, 140, 2, 2, &color.RGBA{240, 240, 246, 246}, []string{})
 		driver = e.DriverMath.ConvertFonts()
-	case "chinese":
+	case "chinese": // 不推荐使用
+		e.DriverChinese = base64Captcha.NewDriverChinese(46, 140, 2, 2, 4, "中国伟大你好是啊华子家乡我爱", &color.RGBA{240, 240, 246, 246}, []string{})
 		driver = e.DriverChinese.ConvertFonts()
 	default:
 		e.DriverDigit = base64Captcha.DefaultDriverDigit
