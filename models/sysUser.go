@@ -135,6 +135,45 @@ func (e *SysUserView) GetPage(pageSize int, pageIndex int) ([]SysUserView, int64
 	return doc, count, nil
 }
 
+// GetList SysUser 不分页的List列表信息
+func (e *SysUserView) GetList() ([]SysUserView, error) {
+	var doc []SysUserView
+
+	table := global.DB.Table(e.tableName())
+	table.Select([]string{"sys_user.*", "sys_role.role_name", "sys_dept.dept_name", "sys_post.post_name"})
+	table.Joins("left outer join sys_role on sys_user.role_id=sys_role.id")
+	table.Joins("left outer join sys_post on sys_user.post_id=sys_post.id")
+	table.Joins("left outer join sys_dept on sys_user.dept_id=sys_dept.id")
+
+	if e.UserName != "" {
+		table = table.Where("sys_user.user_name LIKE ?", "%"+e.UserName+"%")
+	}
+
+	if e.UserCode != "" {
+		table = table.Where("sys_user.user_code LIKE ?", "%"+e.UserCode+"%")
+	}
+
+	if e.Mobile != "" {
+		table = table.Where("sys_user.mobile LIKE ?", "%"+e.Mobile+"%")
+	}
+
+	if e.Status != "" {
+		table = table.Where("sys_user.status = ?", e.Status)
+	}
+
+	if e.DeptID > 0 {
+		table = table.Where("sys_user.dept_id = ?", e.DeptID)
+	}
+
+	table = table.Where("sys_user.is_deleted = ?", 0)
+
+	err := table.Order("sys_user.id").Find(&doc).Error
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
+
 //UpdateUser SysUser 修改
 func (e *SysUser) UpdateUser() (update SysUser, err error) {
 	table := global.DB.Table(e.tableName())

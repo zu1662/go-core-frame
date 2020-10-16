@@ -11,7 +11,7 @@ type SysDept struct {
 	DeptName string `json:"deptName" valid:"required"` // 部门名称
 	Pid      int    `json:"pid"`                       // 父级id
 	LeaderID int    `json:"leaderId" valid:"required"` // 负责人
-	Sort     string `json:"sort"`                      //排序
+	Sort     int    `json:"sort"`                      //排序
 	Status   string `json:"status"`                    // 状态
 	BaseModel
 }

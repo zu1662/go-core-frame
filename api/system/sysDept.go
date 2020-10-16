@@ -24,10 +24,24 @@ func GetDeptDetail(c *gin.Context) {
 	nowDept, err := sysDept.GetDept()
 	utils.HasError(err, "抱歉未找到相关信息", 0)
 
+	sysUser := models.SysUser{}
+	sysUser.ID = nowDept.LeaderID
+	nowUser, _ := sysUser.GetUser()
+
+	var mp = make(map[string]interface{})
+	mp["id"] = nowDept.ID
+	mp["pid"] = nowDept.Pid
+	mp["deptName"] = nowDept.DeptName
+	mp["sort"] = nowDept.Sort
+	mp["status"] = nowDept.Status
+	mp["leaderId"] = nowDept.LeaderID
+	mp["leaderName"] = nowUser.UserName
+	mp["leaderEmail"] = nowUser.Email
+	mp["leaderMobile"] = nowUser.Mobile
 	app.Custom(c, gin.H{
 		"code": 1,
 		"msg":  "ok",
-		"data": nowDept,
+		"data": mp,
 	})
 }
 

@@ -78,6 +78,33 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
+// GetUserAll 用户不分页列表
+// @Summary 用户不分页列表
+// @Tags user
+// @Param userName query string false "用户名称"
+// @Param mobile query string false "手机"
+// @Param status query string false "状态""
+// @Success 200 {object} app.Response "{"code": 1, "msg": "ok", "data": [...]}"
+// @Router /user/listall [get]
+// @Security Authrization
+func GetUserAll(c *gin.Context) {
+	var data models.SysUserView
+	var err error
+
+	data.UserName = c.Request.FormValue("userName")
+	data.UserCode = c.Request.FormValue("userCode")
+	data.Status = c.Request.FormValue("status")
+	data.DeptID, _ = utils.StringToInt(c.Request.FormValue("deptId"))
+	result, err := data.GetList()
+	utils.HasError(err, "", 0)
+
+	app.Custom(c, gin.H{
+		"code": 1,
+		"msg":  "ok",
+		"data": result,
+	})
+}
+
 // UpdateUser 更新用户
 // @Summary 更新用户
 // @Tags user

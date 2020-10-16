@@ -72,6 +72,7 @@ func initUserRouter(Router *gin.RouterGroup) {
 	{
 		APIRouter.GET("/info/:userId", system.GetUserDetail)
 		APIRouter.GET("/list", system.GetUserList)
+		APIRouter.GET("/listall", system.GetUserAll)
 		APIRouter.PUT("/update", system.UpdateUser)
 		APIRouter.PUT("/resetpsw", system.ResetUserPsw)
 		APIRouter.DELETE("/delete/:userId", system.DeleteUser)
