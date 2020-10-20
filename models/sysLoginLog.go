@@ -14,7 +14,7 @@ type LoginLog struct {
 	IPLocation  string    `json:"ipLocation"`  // IP归属地
 	Browser     string    `json:"browser"`     // 浏览器
 	OS          string    `json:"os"`          // 操作系统
-	Result      string    `json:"reslut"`      // 操作结果
+	Result      string    `json:"result"`      // 操作结果
 	Description string    `json:"description"` // 操作描述（user-agent）
 	LoginTime   time.Time `json:"loginTime"`   // 操作时间
 }
@@ -79,8 +79,15 @@ func (e *LoginLog) Create() (LoginLog LoginLog, err error) {
 }
 
 // Delete LoginLog 逻辑删除
-func (e *LoginLog) Delete() (err error) {
+func (e *LoginLog) Delete(ids []int) (err error) {
 	table := global.DB.Table(e.tableName())
-	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	err = table.Where("id in (?)", ids).Update("is_deleted", 1).Error
+	return
+}
+
+// Clean LoginLog 逻辑清空
+func (e *LoginLog) Clean() (err error) {
+	table := global.DB.Table(e.tableName())
+	err = table.Where("is_deleted = ?", 0).Update("is_deleted", 1).Error
 	return
 }

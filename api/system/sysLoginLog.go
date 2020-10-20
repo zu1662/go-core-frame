@@ -29,14 +29,13 @@ func GetLoginLogInfo(c *gin.Context) {
 	}
 	data.ID, _ = utils.StringToInt(id)
 
-	// result, err := data.GetDetail()
-	err = data.Delete()
+	result, err := data.GetDetail()
 	utils.HasError(err, "", 0)
 
 	app.Custom(c, gin.H{
 		"code": 1,
 		"msg":  "ok",
-		// "data": result,
+		"data": result,
 	})
 }
 
@@ -82,4 +81,39 @@ func GetLoginLogList(c *gin.Context) {
 		"msg":  "ok",
 		"data": mp,
 	})
+}
+
+// DeleteLoginlog 删除登录日志
+// @Summary 删除登录日志
+// @Tags log
+// @Param logIds query string true "岗位ids"
+// @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
+// @Router /log/deleteloginlog/{logIds} [delete]
+func DeleteLoginlog(c *gin.Context) {
+	idsStr := c.Param("logIds")
+	if idsStr == "" {
+		err := errors.New("要删除的ID不能为空")
+		utils.HasError(err, "", 0)
+	}
+
+	logIds := utils.IdsStrToIdsIntGroup(idsStr)
+
+	var data models.LoginLog
+
+	err := data.Delete(logIds)
+	utils.HasError(err, "删除失败", 0)
+	app.OK(c, "删除成功", nil)
+}
+
+// CleanLoginlog 清空登录日志
+// @Summary 清空登录日志
+// @Tags log
+// @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
+// @Router /log/cleanloginlog/ [delete]
+func CleanLoginlog(c *gin.Context) {
+	var data models.LoginLog
+
+	err := data.Clean()
+	utils.HasError(err, "", 0)
+	app.OK(c, "清空成功", nil)
 }

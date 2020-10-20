@@ -60,6 +60,8 @@ func initLogRouter(Router *gin.RouterGroup) {
 	{
 		APIRouter.GET("/loginloginfo", system.GetLoginLogInfo)
 		APIRouter.GET("/loginloglist", system.GetLoginLogList)
+		APIRouter.DELETE("/deleteloginlog/:logIds", system.DeleteLoginlog)
+		APIRouter.DELETE("/cleanloginlog", system.CleanLoginlog)
 		APIRouter.GET("/operloginfo", system.GetOperLogInfo)
 		APIRouter.GET("/operloglist", system.GetOperLogList)
 	}
