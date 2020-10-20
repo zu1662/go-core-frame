@@ -73,6 +73,7 @@ func (e *SysDept) InsertDept() (id int, err error) {
 	table := global.DB.Table(e.tableName())
 	// check 用户名
 	var count int64
+	table = table.Where("is_deleted = ?", 0)
 	table.Where("dept_name = ?", e.DeptName).Count(&count)
 	if count > 0 {
 		err = errors.New("部门已存在！")

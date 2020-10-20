@@ -11,7 +11,7 @@ type SysPost struct {
 	PostCode    string `json:"postCode" valid:"required"` // 编码
 	PostName    string `json:"postName" valid:"required"` // 名称
 	Description string `json:"description"`               // 描述
-	Sort        string `json:"sort"`                      //排序
+	Sort        int    `json:"sort"`                      //排序
 	Status      string `json:"status"`                    // 状态
 	BaseModel
 }
@@ -122,6 +122,7 @@ func (e *SysPost) InsertPost() (id int, err error) {
 	table := global.DB.Table(e.tableName())
 	// check 用户名
 	var count int64
+	table = table.Where("is_deleted = ?", 0)
 	table.Where("post_code = ?", e.PostCode).Count(&count)
 	if count > 0 {
 		err = errors.New("账户已存在！")
@@ -137,8 +138,8 @@ func (e *SysPost) InsertPost() (id int, err error) {
 }
 
 // DeletePost 逻辑删除
-func (e *SysPost) DeletePost() (err error) {
+func (e *SysPost) DeletePost(ids []int) (err error) {
 	table := global.DB.Table(e.tableName())
-	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	err = table.Where("id in (?)", ids).Update("is_deleted", 1).Error
 	return
 }

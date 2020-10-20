@@ -162,7 +162,7 @@ func InsertPost(c *gin.Context) {
 	data.UpdateTime = utils.GetCurrentTime()
 
 	id, err := data.InsertPost()
-	utils.HasError(err, "添加失败", 0)
+	utils.HasError(err, "", 0)
 	app.OK(c, "添加成功", id)
 }
 
@@ -173,17 +173,22 @@ func InsertPost(c *gin.Context) {
 // @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
 // @Router /post/delete/{postId} [delete]
 func DeletePost(c *gin.Context) {
-	ID, _ := utils.StringToInt(c.Param("postId"))
+	idsStr := c.Param("postId")
+	if idsStr == "" {
+		err := errors.New("要删除的ID不能为空")
+		utils.HasError(err, "", 0)
+	}
+
+	roleIds := utils.IdsStrToIdsIntGroup(idsStr)
 
 	var data models.SysPost
-	data.ID = ID
 	username, ok := c.Get("username")
 	if !ok {
 		username = "-"
 	}
 	data.UpdateBy = username.(string)
 
-	err := data.DeletePost()
+	err := data.DeletePost(roleIds)
 	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", nil)
 }
