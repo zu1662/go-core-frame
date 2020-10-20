@@ -72,7 +72,7 @@ func GetOperLogList(c *gin.Context) {
 	result, count, err := data.GetPage(pageSize, pageIndex)
 	utils.HasError(err, "", 0)
 
-	var mp = make(map[string]interface{}, 3)
+	var mp = make(map[string]interface{})
 	mp["list"] = result
 	mp["total"] = count
 	mp["pageIndex"] = pageIndex

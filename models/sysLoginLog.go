@@ -56,9 +56,12 @@ func (e *LoginLog) GetPage(pageSize int, pageIndex int) ([]LoginLog, int64, erro
 	table = table.Where("is_deleted = ?", 0)
 
 	var count int64
+	err := table.Count(&count).Error
+	if err != nil {
+		return nil, 0, err
+	}
 
-	err := table.Order("id desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
-	err = table.Count(&count).Error
+	err = table.Order("id desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
 	if err != nil {
 		return nil, 0, err
 	}

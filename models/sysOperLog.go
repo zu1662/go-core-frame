@@ -12,14 +12,14 @@ type OperLog struct {
 	OperName    string    `json:"operName"`    // 操作人
 	OperTitle   string    `json:"operTitle"`   // 操作名称
 	Method      string    `json:"method"`      // 操作类型
-	Path        string    `json:"Path"`        // 地址
+	Path        string    `json:"path"`        // 地址
 	Params      string    `json:"params"`      // 参数
 	LatencyTime string    `json:"latencyTime"` // 执行时间
 	IPAddress   string    `json:"ipAddress"`   // IP地址
 	IPLocation  string    `json:"ipLocation"`  // IP归属地
 	Browser     string    `json:"browser"`     // 浏览器
 	OS          string    `json:"os"`          // 操作系统
-	Result      string    `json:"reslut"`      // 操作结果
+	Result      string    `json:"result"`      // 操作结果
 	OperTime    time.Time `json:"operTime"`    // 操作时间
 }
 
@@ -63,9 +63,12 @@ func (e *OperLog) GetPage(pageSize int, pageIndex int) ([]OperLog, int64, error)
 	table = table.Where("is_deleted = ?", 0)
 
 	var count int64
+	err := table.Count(&count).Error
+	if err != nil {
+		return nil, 0, err
+	}
 
-	err := table.Order("id desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
-	err = table.Count(&count).Error
+	err = table.Order("id desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
 	if err != nil {
 		return nil, 0, err
 	}

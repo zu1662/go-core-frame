@@ -65,9 +65,12 @@ func (e *SysDictType) GetDictTypePage(pageSize int, pageIndex int) ([]SysDictTyp
 	table = table.Where("is_deleted = ?", 0)
 
 	var count int64
+	err := table.Count(&count).Error
+	if err != nil {
+		return nil, 0, err
+	}
 
-	err := table.Order("sort").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
-	err = table.Count(&count).Error
+	err = table.Order("sort").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
 	if err != nil {
 		return nil, 0, err
 	}

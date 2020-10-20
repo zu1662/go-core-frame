@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // MysqlDB info
@@ -20,7 +21,13 @@ func MysqlSetup() {
 		config.MysqlConfig.DBName + "?" +
 		config.MysqlConfig.Config
 	//连接数据库
-	MysqlDB, err := gorm.Open(mysql.Open(connectDsn), &gorm.Config{})
+	gormLogLevel := logger.Silent
+	if config.ApplicationConfig.Mode == "dev" {
+		gormLogLevel = logger.Info
+	}
+	MysqlDB, err := gorm.Open(mysql.Open(connectDsn), &gorm.Config{
+		Logger: logger.Default.LogMode(gormLogLevel),
+	})
 	if err != nil {
 		global.Logger.Fatal(" Mysql connect error :", err)
 	} else {
