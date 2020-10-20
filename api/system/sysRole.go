@@ -208,6 +208,10 @@ func InsertRole(c *gin.Context) {
 // @Router /role/delete/{roleId} [delete]
 func DeleteRole(c *gin.Context) {
 	idsStr := c.Param("roleId")
+	if idsStr == "" {
+		err := errors.New("要删除的ID不能为空")
+		utils.HasError(err, "", 0)
+	}
 	roleIds := utils.IdsStrToIdsIntGroup(idsStr)
 
 	var data models.SysRole

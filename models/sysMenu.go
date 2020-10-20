@@ -18,7 +18,7 @@ type SysMenu struct {
 	Visible    string `json:"visible"`                     // 可见
 	Cache      string `json:"cache"`                       // 缓存
 	Type       string `json:"type"`                        // 类型 0目录1菜单2按钮
-	Sort       string `json:"sort"`                        //排序
+	Sort       int    `json:"sort"`                        //排序
 	BaseModel
 }
 

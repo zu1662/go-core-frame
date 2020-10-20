@@ -220,7 +220,10 @@ func InsertUser(c *gin.Context) {
 // @Security Authrization
 func DeleteUser(c *gin.Context) {
 	idsStr := c.Param("userId")
-
+	if idsStr == "" {
+		err := errors.New("要删除的ID不能为空")
+		utils.HasError(err, "", 0)
+	}
 	var data models.SysUser
 	userIds := utils.IdsStrToIdsIntGroup(idsStr)
 

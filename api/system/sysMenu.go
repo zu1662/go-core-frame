@@ -90,7 +90,7 @@ func InsertMenu(c *gin.Context) {
 	data.UpdateTime = utils.GetCurrentTime()
 
 	id, err := data.InsertMenu()
-	utils.HasError(err, "添加失败", 0)
+	utils.HasError(err, "", 0)
 	app.OK(c, "添加成功", id)
 }
 
