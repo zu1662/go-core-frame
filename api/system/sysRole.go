@@ -18,16 +18,36 @@ import (
 // @Router /role/info/{roleId} [get]
 // @Security Authorization
 func GetRoleDetail(c *gin.Context) {
-	roleID, _ := utils.StringToInt(c.Param("roleID"))
-	sysRole := models.SysRole{}
-	sysRole.ID = roleID
-	nowDept, err := sysRole.GetRole()
+	roleID, _ := utils.StringToInt(c.Param("roleId"))
+	if roleID <= 0 {
+		err := errors.New("roleId 不能为空")
+		utils.HasError(err, "", 0)
+	}
+
+	sysRoleView := models.SysRoleView{}
+	sysRoleView.ID = roleID
+	nowRoleView, err := sysRoleView.GetRole()
 	utils.HasError(err, "抱歉未找到相关信息", 0)
+
+	// 获取 role menu 关联信息
+	var menuData models.SysRoleMenu
+
+	menuData.RoleID = roleID
+
+	result, err := menuData.GetRoleMenu()
+	utils.HasError(err, "", 0)
+
+	var arr []int
+	for _, sysRoleMenu := range result {
+		arr = append(arr, sysRoleMenu.MenuID)
+	}
+
+	nowRoleView.MenuList = arr
 
 	app.Custom(c, gin.H{
 		"code": 1,
 		"msg":  "ok",
-		"data": nowDept,
+		"data": nowRoleView,
 	})
 }
 
@@ -111,7 +131,7 @@ func GetRoleAll(c *gin.Context) {
 // @Success 200 {string} string	"{"code": 0, "msg": "修改失败"}"
 // @Router /role/update/{roleId} [put]
 func UpdateRole(c *gin.Context) {
-	var data models.SysRole
+	var data models.SysRoleView
 	err := c.Bind(&data)
 	utils.HasError(err, "", 0)
 
@@ -119,9 +139,6 @@ func UpdateRole(c *gin.Context) {
 		err = errors.New("id 不能为空")
 		utils.HasError(err, "", 0)
 	}
-
-	errValidate := utils.StructValidate(data)
-	utils.HasError(errValidate, "", 0)
 
 	username, ok := c.Get("username")
 	if !ok {
@@ -132,6 +149,14 @@ func UpdateRole(c *gin.Context) {
 
 	result, err := data.UpdateRole()
 
+	utils.HasError(err, "修改失败", 0)
+
+	// 修改 Role Menu 关联
+	var roleMenuData models.SysRoleMenuView
+	roleMenuData.RoleID = data.ID
+	roleMenuData.MenuList = data.MenuList
+	roleMenuData.BaseModel = data.BaseModel
+	err = roleMenuData.UpdateRoleMenu()
 	utils.HasError(err, "修改失败", 0)
 
 	app.OK(c, "修改成功", result)
@@ -145,7 +170,7 @@ func UpdateRole(c *gin.Context) {
 // @Success 200 {string} string	"{"code": 0, "message": "添加失败"}"
 // @Router /api/v1/role/add [post]
 func InsertRole(c *gin.Context) {
-	var data models.SysRole
+	var data models.SysRoleView
 	err := c.Bind(&data)
 	utils.HasError(err, "非法数据格式", 0)
 
@@ -163,6 +188,15 @@ func InsertRole(c *gin.Context) {
 
 	id, err := data.InsertRole()
 	utils.HasError(err, "添加失败", 0)
+
+	// 修改 Role Menu 关联
+	var roleMenuData models.SysRoleMenuView
+	roleMenuData.RoleID = id
+	roleMenuData.MenuList = data.MenuList
+	roleMenuData.BaseModel = data.BaseModel
+	err = roleMenuData.UpdateRoleMenu()
+	utils.HasError(err, "修改失败", 0)
+
 	app.OK(c, "添加成功", id)
 }
 
@@ -173,17 +207,17 @@ func InsertRole(c *gin.Context) {
 // @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
 // @Router /role/delete/{roleId} [delete]
 func DeleteRole(c *gin.Context) {
-	ID, _ := utils.StringToInt(c.Param("roleId"))
+	idsStr := c.Param("roleId")
+	roleIds := utils.IdsStrToIdsIntGroup(idsStr)
 
 	var data models.SysRole
-	data.ID = ID
 	username, ok := c.Get("username")
 	if !ok {
 		username = "-"
 	}
 	data.UpdateBy = username.(string)
 
-	err := data.DeleteRole()
+	err := data.DeleteRole(roleIds)
 	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", nil)
 }

@@ -11,9 +11,15 @@ type SysRole struct {
 	RoleCode    string `json:"roleCode" valid:"required"` // 角色code
 	RoleName    string `json:"roleName" valid:"required"` // 角色名称
 	Description string `json:"description"`               // 描述
-	Sort        string `json:"sort"`                      //排序
+	Sort        int    `json:"sort"`                      //排序
 	Status      string `json:"status"`                    // 状态
 	BaseModel
+}
+
+// SysRoleView 角色返回结构
+type SysRoleView struct {
+	SysRole
+	MenuList []int `json:"menuList"` // 关联菜单信息
 }
 
 // tableName 获取当前表的名称
@@ -22,7 +28,7 @@ func (e *SysRole) tableName() string {
 }
 
 // GetRole 获取角色详情数据
-func (e *SysRole) GetRole() (sysRole SysRole, err error) {
+func (e *SysRoleView) GetRole() (sysRoleView SysRoleView, err error) {
 	table := global.DB.Table(e.tableName())
 	if e.ID > 0 {
 		table = table.Where("id = ?", e.ID)
@@ -42,7 +48,7 @@ func (e *SysRole) GetRole() (sysRole SysRole, err error) {
 
 	table = table.Where("is_deleted = ?", 0)
 
-	if err = table.First(&sysRole).Error; err != nil {
+	if err = table.First(&sysRoleView).Error; err != nil {
 		return
 	}
 	return
@@ -146,8 +152,8 @@ func (e *SysRole) InsertRole() (id int, err error) {
 }
 
 // DeleteRole 逻辑删除
-func (e *SysRole) DeleteRole() (err error) {
+func (e *SysRole) DeleteRole(ids []int) (err error) {
 	table := global.DB.Table(e.tableName())
-	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	err = table.Where("id in (?)", ids).Update("is_deleted", 1).Error
 	return
 }
