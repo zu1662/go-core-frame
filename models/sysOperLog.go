@@ -90,8 +90,15 @@ func (e *OperLog) Create() (OperLog OperLog, err error) {
 }
 
 // Delete OperLog 逻辑删除
-func (e *OperLog) Delete() (err error) {
+func (e *OperLog) Delete(ids []int) (err error) {
 	table := global.DB.Table(e.tableName())
-	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	err = table.Where("id in (?)", ids).Update("is_deleted", 1).Error
+	return
+}
+
+// Clean OperLog 逻辑清空
+func (e *OperLog) Clean() (err error) {
+	table := global.DB.Table(e.tableName())
+	err = table.Where("is_deleted = ?", 0).Update("is_deleted", 1).Error
 	return
 }

@@ -64,6 +64,8 @@ func initLogRouter(Router *gin.RouterGroup) {
 		APIRouter.DELETE("/cleanloginlog", system.CleanLoginlog)
 		APIRouter.GET("/operloginfo", system.GetOperLogInfo)
 		APIRouter.GET("/operloglist", system.GetOperLogList)
+		APIRouter.DELETE("/deleteoperlog/:logIds", system.DeleteOperlog)
+		APIRouter.DELETE("/cleanoperlog", system.CleanOperlog)
 	}
 }
 

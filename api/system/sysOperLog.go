@@ -84,3 +84,38 @@ func GetOperLogList(c *gin.Context) {
 		"data": mp,
 	})
 }
+
+// DeleteOperlog 删除操作日志
+// @Summary 删除操作日志
+// @Tags log
+// @Param logIds query string true "岗位ids"
+// @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
+// @Router /log/deleteoperlog/{logIds} [delete]
+func DeleteOperlog(c *gin.Context) {
+	idsStr := c.Param("logIds")
+	if idsStr == "" {
+		err := errors.New("要删除的ID不能为空")
+		utils.HasError(err, "", 0)
+	}
+
+	logIds := utils.IdsStrToIdsIntGroup(idsStr)
+
+	var data models.OperLog
+
+	err := data.Delete(logIds)
+	utils.HasError(err, "删除失败", 0)
+	app.OK(c, "删除成功", nil)
+}
+
+// CleanOperlog 清空操作日志
+// @Summary 清空操作日志
+// @Tags log
+// @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
+// @Router /log/cleanoperlog/ [delete]
+func CleanOperlog(c *gin.Context) {
+	var data models.OperLog
+
+	err := data.Clean()
+	utils.HasError(err, "", 0)
+	app.OK(c, "清空成功", nil)
+}
