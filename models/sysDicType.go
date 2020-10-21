@@ -7,11 +7,12 @@ import (
 
 // SysDictType 字典类型信息结构
 type SysDictType struct {
-	ID       int    `gorm:"" json:"id"`                //数据库id
-	DictName string `json:"dictName" valid:"required"` // 字典名称
-	DictType string `json:"dictType" valid:"required"` // 字典类型（编码）
-	Sort     string `json:"sort"`                      // 状态
-	Status   string `json:"status"`                    // 状态
+	ID          int    `gorm:"" json:"id"`                //数据库id
+	DictName    string `json:"dictName" valid:"required"` // 字典名称
+	DictType    string `json:"dictType" valid:"required"` // 字典类型（编码）
+	Description string `json:"description"`               // 描述
+	Sort        int    `json:"sort"`                      // 状态
+	Status      string `json:"status"`                    // 状态
 	BaseModel
 }
 
@@ -113,9 +114,9 @@ func (e *SysDictType) InsertDictType() (id int, err error) {
 }
 
 // DeleteDictType 逻辑删除
-func (e *SysDictType) DeleteDictType() (err error) {
+func (e *SysDictType) DeleteDictType(ids []int) (err error) {
 	table := global.DB.Table(e.tableName())
-	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	err = table.Where("id in (?)", ids).Update("is_deleted", 1).Error
 	return
 }
 

@@ -12,7 +12,7 @@ type SysDictData struct {
 	DictLabel   string `json:"dictLabel" valid:"required"`  // 字典值字段
 	DictValue   string `json:"dictValue" valid:"required"`  // 字典值字段
 	Description string `json:"discription"`                 // 描述
-	Sort        string `json:"sort"`                        //排序
+	Sort        int    `json:"sort"`                        //排序
 	Status      string `json:"status"`                      // 状态
 	BaseModel
 }
@@ -123,9 +123,9 @@ func (e *SysDictData) InsertDictData() (id int, err error) {
 }
 
 // DeleteDictData 逻辑删除
-func (e *SysDictData) DeleteDictData() (err error) {
+func (e *SysDictData) DeleteDictData(ids []int) (err error) {
 	table := global.DB.Table(e.tableName())
-	err = table.Where("id = ?", e.ID).Update("is_deleted", 1).Error
+	err = table.Where("id in (?)", ids).Update("is_deleted", 1).Error
 	return
 }
 

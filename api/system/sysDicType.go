@@ -148,17 +148,22 @@ func InsertDictType(c *gin.Context) {
 // @Success 200 {string} string	"{"code": 1, "msg": "删除成功"}"
 // @Router /dict/dicttypedelete/{dictTypeId} [delete]
 func DeleteDictType(c *gin.Context) {
-	ID, _ := utils.StringToInt(c.Param("dictTypeId"))
+	idsStr := c.Param("dictTypeId")
+	if idsStr == "" {
+		err := errors.New("要删除的ID不能为空")
+		utils.HasError(err, "", 0)
+	}
+
+	dictTypeIds := utils.IdsStrToIdsIntGroup(idsStr)
 
 	var data models.SysDictType
-	data.ID = ID
 	username, ok := c.Get("username")
 	if !ok {
 		username = "-"
 	}
 	data.UpdateBy = username.(string)
 
-	err := data.DeleteDictType()
+	err := data.DeleteDictType(dictTypeIds)
 	utils.HasError(err, "删除失败", 0)
 	app.OK(c, "删除成功", nil)
 }
