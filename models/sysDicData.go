@@ -11,7 +11,7 @@ type SysDictData struct {
 	DictTypeID  string `json:"dictTypeId" valid:"required"` // 字典类型ID（编码）
 	DictLabel   string `json:"dictLabel" valid:"required"`  // 字典值字段
 	DictValue   string `json:"dictValue" valid:"required"`  // 字典值字段
-	Description string `json:"discription"`                 // 描述
+	Description string `json:"description"`                 // 描述
 	Sort        int    `json:"sort"`                        //排序
 	Status      string `json:"status"`                      // 状态
 	BaseModel
