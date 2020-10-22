@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"go-core-frame/global"
+	"strconv"
 )
 
 // LoginForm 登录结构
@@ -98,32 +99,35 @@ func (e *SysUserView) GetPage(pageSize int, pageIndex int) ([]SysUserView, int64
 	var doc []SysUserView
 
 	table := global.DB.Table(e.tableName())
-	table.Select([]string{"sys_user.*", "sys_role.role_name", "sys_dept.dept_name", "sys_post.post_name"})
-	table.Joins("left outer join sys_role on sys_user.role_id=sys_role.id")
-	table.Joins("left outer join sys_post on sys_user.post_id=sys_post.id")
-	table.Joins("left outer join sys_dept on sys_user.dept_id=sys_dept.id")
 
+	queryStr := "WHERE"
 	if e.UserName != "" {
 		table = table.Where("sys_user.user_name LIKE ?", "%"+e.UserName+"%")
+		queryStr = queryStr + " sys_user.user_name LIKE '%" + e.UserName + "%' AND"
 	}
 
 	if e.UserCode != "" {
 		table = table.Where("sys_user.user_code LIKE ?", "%"+e.UserCode+"%")
+		queryStr = queryStr + " sys_user.user_code LIKE '%" + e.UserCode + "%' AND"
 	}
 
 	if e.Mobile != "" {
 		table = table.Where("sys_user.mobile LIKE ?", "%"+e.Mobile+"%")
+		queryStr = queryStr + " sys_user.mobile LIKE '%" + e.Mobile + "%' AND"
 	}
 
 	if e.Status != "" {
 		table = table.Where("sys_user.status = ?", e.Status)
+		queryStr = queryStr + " sys_user.status = " + e.Status + " AND"
 	}
 
 	if e.DeptID > 0 {
 		table = table.Where("sys_user.dept_id = ?", e.DeptID)
+		queryStr = queryStr + " sys_user.dept_id = " + strconv.Itoa(e.DeptID) + " AND"
 	}
 
 	table = table.Where("sys_user.is_deleted = ?", 0)
+	queryStr = queryStr + " sys_user.is_deleted = " + "0"
 
 	var count int64
 	err := table.Count(&count).Error
@@ -131,10 +135,8 @@ func (e *SysUserView) GetPage(pageSize int, pageIndex int) ([]SysUserView, int64
 		return nil, 0, err
 	}
 
-	err = table.Order("sys_user.id").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error
-	if err != nil {
-		return nil, 0, err
-	}
+	table.Raw("SELECT sys_user.*,`sys_role`.`role_name`,`sys_dept`.`dept_name`,`sys_post`.`post_name` FROM `sys_user` left join sys_role on sys_user.role_id=sys_role.id left join sys_post on sys_user.post_id=sys_post.id left join sys_dept on sys_user.dept_id=sys_dept.id " + queryStr).Scan(&doc)
+
 	return doc, count, nil
 }
 
@@ -143,34 +145,31 @@ func (e *SysUserView) GetList() ([]SysUserView, error) {
 	var doc []SysUserView
 
 	table := global.DB.Table(e.tableName())
-	table.Select([]string{"sys_user.*", "sys_role.role_name", "sys_dept.dept_name", "sys_post.post_name"})
-	table.Joins("left outer join sys_role on sys_user.role_id=sys_role.id")
-	table.Joins("left outer join sys_post on sys_user.post_id=sys_post.id")
-	table.Joins("left outer join sys_dept on sys_user.dept_id=sys_dept.id")
 
+	queryStr := "WHERE"
 	if e.UserName != "" {
-		table = table.Where("sys_user.user_name LIKE ?", "%"+e.UserName+"%")
+		queryStr = queryStr + " sys_user.user_name LIKE '%" + e.UserName + "%' AND"
 	}
 
 	if e.UserCode != "" {
-		table = table.Where("sys_user.user_code LIKE ?", "%"+e.UserCode+"%")
+		queryStr = queryStr + " sys_user.user_code LIKE '%" + e.UserCode + "%' AND"
 	}
 
 	if e.Mobile != "" {
-		table = table.Where("sys_user.mobile LIKE ?", "%"+e.Mobile+"%")
+		queryStr = queryStr + " sys_user.mobile LIKE '%" + e.Mobile + "%' AND"
 	}
 
 	if e.Status != "" {
-		table = table.Where("sys_user.status = ?", e.Status)
+		queryStr = queryStr + " sys_user.status = " + e.Status + " AND"
 	}
 
 	if e.DeptID > 0 {
-		table = table.Where("sys_user.dept_id = ?", e.DeptID)
+		queryStr = queryStr + " sys_user.dept_id = " + strconv.Itoa(e.DeptID) + " AND"
 	}
 
-	table = table.Where("sys_user.is_deleted = ?", 0)
+	queryStr = queryStr + " sys_user.is_deleted = " + "0"
 
-	err := table.Order("sys_user.id").Find(&doc).Error
+	err := table.Raw("SELECT sys_user.*,`sys_role`.`role_name`,`sys_dept`.`dept_name`,`sys_post`.`post_name` FROM `sys_user` left join sys_role on sys_user.role_id=sys_role.id left join sys_post on sys_user.post_id=sys_post.id left join sys_dept on sys_user.dept_id=sys_dept.id " + queryStr).Scan(&doc).Error
 	if err != nil {
 		return nil, err
 	}

@@ -26,13 +26,9 @@ func GetRoleMenu(c *gin.Context) {
 	}
 	data.RoleID = roleID
 
-	result, err := data.GetRoleMenu()
+	arr, err := data.GetRoleMenu()
 	utils.HasError(err, "", 0)
 
-	var arr []int
-	for _, sysRoleMenu := range result {
-		arr = append(arr, sysRoleMenu.MenuID)
-	}
 	var mp = make(map[string]interface{}, 3)
 	mp["roleId"] = data.RoleID
 	mp["menuList"] = arr

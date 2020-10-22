@@ -18,6 +18,9 @@ type SysRoleMenuView struct {
 	MenuList []int `json:"menuList" valid:"required"` // 菜单ID
 	BaseModel
 }
+type MenuIdList struct {
+	MenuId int `json:"menuId"`
+}
 
 // tableName 获取当前表的名称
 func (e *SysRoleMenu) tableName() string {
@@ -30,26 +33,18 @@ func (e *SysRoleMenuView) tableName() string {
 }
 
 // GetRoleMenu Role 关联的 Menu List列表信息
-func (e *SysRoleMenu) GetRoleMenu() ([]SysRoleMenu, error) {
-	var doc []SysRoleMenu
-
+func (e *SysRoleMenu) GetRoleMenu() ([]int, error) {
 	table := global.DB.Table(e.tableName())
-
-	if e.RoleID > 0 {
-		table = table.Where("role_id = ?", e.RoleID)
-	}
-
-	if e.MenuID > 0 {
-		table = table.Where("menu_id = ?", e.MenuID)
-	}
-
-	table = table.Where("is_deleted = ?", 0)
-
-	err := table.Find(&doc).Error
-	if err != nil {
+	menuIds := make([]int, 0)
+	menuList := make([]MenuIdList, 0)
+	if err := table.Select("sys_role_menu.menu_id").Where("role_id = ? ", e.RoleID).Where(" sys_role_menu.menu_id not in(select sys_menu.pid from sys_role_menu LEFT JOIN sys_menu on sys_menu.id=sys_role_menu.menu_id where role_id =?  and pid is not null)", e.RoleID).Find(&menuList).Error; err != nil {
 		return nil, err
 	}
-	return doc, nil
+
+	for i := 0; i < len(menuList); i++ {
+		menuIds = append(menuIds, menuList[i].MenuId)
+	}
+	return menuIds, nil
 }
 
 //UpdateRoleMenu 修改

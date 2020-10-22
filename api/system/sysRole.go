@@ -34,13 +34,8 @@ func GetRoleDetail(c *gin.Context) {
 
 	menuData.RoleID = roleID
 
-	result, err := menuData.GetRoleMenu()
+	arr, err := menuData.GetRoleMenu()
 	utils.HasError(err, "", 0)
-
-	var arr []int
-	for _, sysRoleMenu := range result {
-		arr = append(arr, sysRoleMenu.MenuID)
-	}
 
 	nowRoleView.MenuList = arr
 
