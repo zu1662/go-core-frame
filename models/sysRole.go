@@ -20,6 +20,7 @@ type SysRole struct {
 type SysRoleView struct {
 	SysRole
 	MenuList []int `json:"menuList"` // 关联菜单信息
+	APIList  []int `json:"apiList"`  // 关联api信息
 }
 
 // tableName 获取当前表的名称

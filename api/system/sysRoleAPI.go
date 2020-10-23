@@ -24,12 +24,12 @@ func GetRoleAPI(c *gin.Context) {
 		err := errors.New("roleId 不能为空")
 		utils.HasError(err, "", 0)
 	}
-	data.RoleID = roleID
+	data.RoleID, _ = utils.StringToInt(roleID)
 
 	result, err := data.GetRoleAPI()
 	utils.HasError(err, "", 0)
 
-	var arr []string
+	var arr []int
 	for _, sysRoleAPI := range result {
 		arr = append(arr, sysRoleAPI.APIID)
 	}
@@ -56,7 +56,7 @@ func UpdateRoleAPI(c *gin.Context) {
 	err := c.Bind(&data)
 	utils.HasError(err, "", 0)
 
-	if data.RoleID == "" {
+	if data.RoleID == 0 {
 		err = errors.New("roleId 不能为空")
 		utils.HasError(err, "", 0)
 	}

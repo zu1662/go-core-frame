@@ -13,7 +13,7 @@ type SysAPI struct {
 	Path   string `json:"path" valid:"required"` // 路径
 	Method string `json:"method"`                // 请求类型
 	Type   string `json:"type" valid:"required"` // 类型 0目录1接口
-	Sort   string `json:"sort"`                  //排序
+	Sort   int    `json:"sort"`                  //排序
 	Status string `json:"status"`                // 状态
 	BaseModel
 }

@@ -111,7 +111,7 @@ func initPostRouter(Router *gin.RouterGroup) {
 	}
 }
 
-// initMenuRouter 岗位路由
+// initMenuRouter 菜单路由
 func initMenuRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("menu").
 		Use(middleware.JWTAuth())
@@ -170,7 +170,7 @@ func initDicRouter(Router *gin.RouterGroup) {
 
 // initAPIRouter 岗位路由
 func initAPIRouter(Router *gin.RouterGroup) {
-	APIRouter := Router.Group("api").
+	APIRouter := Router.Group("interface").
 		Use(middleware.JWTAuth())
 	{
 		APIRouter.GET("/info/:apiId", system.GetAPIDetail)

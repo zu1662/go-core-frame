@@ -6,16 +6,16 @@ import (
 
 // SysRoleAPI 角色接口关联结构
 type SysRoleAPI struct {
-	ID     int    `gorm:"" json:"id"`              //数据库id
-	RoleID string `json:"roleId" valid:"required"` // 角色ID
-	APIID  string `json:"apiId" valid:"required"`  // 接口ID
+	ID     int `gorm:"" json:"id"`              //数据库id
+	RoleID int `json:"roleId" valid:"required"` // 角色ID
+	APIID  int `json:"apiId" valid:"required"`  // 接口ID
 	BaseModel
 }
 
 // SysRoleAPIView 角色接口列表关联结构
 type SysRoleAPIView struct {
-	RoleID  string   `json:"roleId" valid:"required"`  // 角色ID
-	APIList []string `json:"apiList" valid:"required"` // 接口ID
+	RoleID  int   `json:"roleId" valid:"required"`  // 角色ID
+	APIList []int `json:"apiList" valid:"required"` // 接口ID
 	BaseModel
 }
 
@@ -35,11 +35,11 @@ func (e *SysRoleAPI) GetRoleAPI() ([]SysRoleAPI, error) {
 
 	table := global.DB.Table(e.tableName())
 
-	if e.RoleID != "" {
+	if e.RoleID > 0 {
 		table = table.Where("role_id = ?", e.RoleID)
 	}
 
-	if e.APIID != "" {
+	if e.APIID > 0 {
 		table = table.Where("api_id = ?", e.APIID)
 	}
 
@@ -56,7 +56,7 @@ func (e *SysRoleAPI) GetRoleAPI() ([]SysRoleAPI, error) {
 func (e *SysRoleAPIView) UpdateRoleAPI() (err error) {
 	table := global.DB.Table(e.tableName())
 	// 先删除之前的roleId关联的数据
-	if e.RoleID != "" {
+	if e.RoleID > 0 {
 		if err = table.Where("role_id = ?", e.RoleID).Delete(SysRoleAPI{}).Error; err != nil {
 			return
 		}

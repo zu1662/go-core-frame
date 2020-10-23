@@ -39,6 +39,18 @@ func GetRoleDetail(c *gin.Context) {
 
 	nowRoleView.MenuList = arr
 
+	// 获取 role api 信息
+	var roleAPIData models.SysRoleAPI
+	roleAPIData.RoleID = roleID
+	nowRoleAPIView, err := roleAPIData.GetRoleAPI()
+	utils.HasError(err, "", 0)
+
+	var apiList []int
+	for _, roleAPI := range nowRoleAPIView {
+		apiList = append(apiList, roleAPI.APIID)
+	}
+	nowRoleView.APIList = apiList
+
 	app.Custom(c, gin.H{
 		"code": 1,
 		"msg":  "ok",
@@ -152,6 +164,14 @@ func UpdateRole(c *gin.Context) {
 	roleMenuData.MenuList = data.MenuList
 	roleMenuData.BaseModel = data.BaseModel
 	err = roleMenuData.UpdateRoleMenu()
+	utils.HasError(err, "修改失败", 0)
+
+	// 修改role api 关联
+	var roleAPIData models.SysRoleAPIView
+	roleAPIData.RoleID = data.ID
+	roleAPIData.APIList = data.APIList
+	roleAPIData.BaseModel = data.BaseModel
+	err = roleAPIData.UpdateRoleAPI()
 	utils.HasError(err, "修改失败", 0)
 
 	app.OK(c, "修改成功", result)
