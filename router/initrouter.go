@@ -23,6 +23,9 @@ func InitRouter() *gin.Engine {
 	// 自定义日志处理
 	Router.Use(middleware.SetLogger())
 
+	// 设置API权限
+	Router.Use(middleware.APIAuth())
+
 	// 自定义错误处理
 	Router.Use(middleware.CustomError)
 

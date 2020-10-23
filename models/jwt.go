@@ -39,6 +39,7 @@ type Token struct {
 
 // UserClaims  用户信息载体结构
 type UserClaims struct {
+	ID       int    `json:"id"`
 	UUID     string `json:"uuid"`
 	Username string `json:"username"`
 	Usercode string `json:"usercode"`
@@ -78,6 +79,7 @@ func NewJWT() *JWT {
 func (j *JWT) CreateToken(userClaims *UserClaims) (*Token, error) {
 	claims := &JWTClaims{
 		UserClaims: UserClaims{
+			ID:       userClaims.ID,
 			UUID:     userClaims.UUID,
 			Username: userClaims.Username,
 			Usercode: userClaims.Usercode,

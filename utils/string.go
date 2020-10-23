@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -146,4 +147,17 @@ func GetMD5HashCode(message []byte) string {
 func GetUUID() string {
 	uid, _ := uuid.NewV4()
 	return uid.String()
+}
+
+// GetAPIPath 获取API接口path
+func GetAPIPath(str string, regStr string) string {
+	if regStr == "" {
+		regStr = `^/v1(.*?)/:.*`
+	}
+	pathRegexp := regexp.MustCompile(regStr)
+	params := pathRegexp.FindStringSubmatch(str)
+	if params != nil {
+		return params[1]
+	}
+	return str
 }

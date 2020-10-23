@@ -41,7 +41,7 @@ func SetLogger() gin.HandlerFunc {
 		reqMethod := c.Request.Method
 
 		// 请求路由
-		reqURI := c.Request.RequestURI
+		reqURI := utils.GetAPIPath(c.FullPath(), "")
 
 		// 状态码
 		statusCode := c.Writer.Status()
@@ -99,7 +99,7 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 		loginLog.Create()
 	} else {
 		api := models.SysAPI{}
-		api.Path = reqURI
+		api.Path = strings.TrimLeft(reqURI, "/v1")
 		api.Method = reqMethod
 		nowAPI, apiErr := api.GetAPI()
 

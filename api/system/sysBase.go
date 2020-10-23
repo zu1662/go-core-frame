@@ -58,6 +58,7 @@ func Login(c *gin.Context) {
 
 	j := models.NewJWT()
 	token, tokenErr := j.CreateToken(&models.UserClaims{
+		ID:       loginUser.ID,
 		UUID:     loginUser.UUID,
 		Usercode: loginUser.UserCode,
 		Username: loginUser.UserName,

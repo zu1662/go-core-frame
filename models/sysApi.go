@@ -36,7 +36,7 @@ func (e *SysAPI) GetAPI() (sysAPI SysAPI, err error) {
 		table = table.Where("id = ?", e.ID)
 	}
 	if e.Path != "" {
-		table = table.Where("path = ?", e.Path)
+		table = table.Where("path LIKE ?", "%"+e.Path+"%")
 	}
 	if e.Method != "" {
 		table = table.Where("method = ?", e.Method)
