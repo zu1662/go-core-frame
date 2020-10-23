@@ -126,6 +126,10 @@ func (e *SysDictType) GetDictTypeAll() ([]SysDictType, error) {
 
 	table := global.DB.Table(e.tableName())
 
+	if e.DictType != "" {
+		table = table.Where("dict_type = ?", e.DictType)
+	}
+
 	if e.Status != "" {
 		table = table.Where("status = ?", e.Status)
 	}

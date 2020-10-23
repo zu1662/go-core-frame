@@ -64,7 +64,7 @@ func GetDictDataList(c *gin.Context) {
 		err = errors.New("dictTypeId 不能为空")
 		utils.HasError(err, "", 0)
 	}
-	data.DictTypeID = dictTypeID
+	data.DictTypeID, _ = utils.StringToInt(dictTypeID)
 
 	data.DictLabel = c.Request.FormValue("dictLabel")
 	data.DictValue = c.Request.FormValue("dictValue")
@@ -129,7 +129,7 @@ func UpdateDictData(c *gin.Context) {
 func InsertDictData(c *gin.Context) {
 	var data models.SysDictData
 	err := c.Bind(&data)
-	utils.HasError(err, "非法数据格式", 0)
+	utils.HasError(err, "", 0)
 
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)

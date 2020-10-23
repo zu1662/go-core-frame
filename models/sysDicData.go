@@ -3,12 +3,13 @@ package models
 import (
 	"errors"
 	"go-core-frame/global"
+	"strconv"
 )
 
 // SysDictData 字典类型信息结构
 type SysDictData struct {
 	ID          int    `gorm:"" json:"id"`                  //数据库id
-	DictTypeID  string `json:"dictTypeId" valid:"required"` // 字典类型ID（编码）
+	DictTypeID  int    `json:"dictTypeId" valid:"required"` // 字典类型ID（编码）
 	DictLabel   string `json:"dictLabel" valid:"required"`  // 字典值字段
 	DictValue   string `json:"dictValue" valid:"required"`  // 字典值字段
 	Description string `json:"description"`                 // 描述
@@ -30,7 +31,7 @@ func (e *SysDictData) GetDictData() (sysDictData SysDictData, err error) {
 		table = table.Where("id = ?", e.ID)
 	}
 
-	if e.DictTypeID != "" {
+	if e.DictTypeID > 0 {
 		table = table.Where("dict_type_id = ?", e.DictTypeID)
 	}
 
@@ -56,8 +57,8 @@ func (e *SysDictData) GetDictDataPage(pageSize int, pageIndex int) ([]SysDictDat
 
 	table := global.DB.Table(e.tableName())
 
-	if e.DictTypeID != "" {
-		table = table.Where("dict_type_id LIKE ?", "%"+e.DictTypeID+"%")
+	if e.DictTypeID > 0 {
+		table = table.Where("dict_type_id LIKE ?", "%"+strconv.Itoa(e.DictTypeID)+"%")
 	}
 
 	if e.DictLabel != "" {
@@ -135,7 +136,7 @@ func (e *SysDictData) GetDictDataAll() ([]SysDictData, error) {
 
 	table := global.DB.Table(e.tableName())
 
-	if e.DictTypeID != "" {
+	if e.DictTypeID > 0 {
 		table = table.Where("dict_type_id = ?", e.DictTypeID)
 	}
 
