@@ -139,7 +139,7 @@ func recursionMenu(menuList *[]SysMenuView, nowMenu SysMenuView, roleID int) Sys
 	var sysRoleMenu SysRoleMenu
 	sysRoleMenu.MenuID = nowMenu.ID
 	sysRoleMenu.RoleID = roleID
-	roleMenuList, _ := sysRoleMenu.GetRoleMenu()
+	roleMenuList, _ := sysRoleMenu.GetRoleMenuFlagList()
 	if len(roleMenuList) == 0 {
 		nowMenu.AuthFlag = 0
 	} else {
