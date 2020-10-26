@@ -129,7 +129,7 @@ func GetUserInfo(c *gin.Context) {
 	userClaims := utils.GetUserClaims(c)
 
 	userView := models.SysUserInfo{}
-	userView.UserCode = userClaims.Username
+	userView.UserCode = userClaims.Usercode
 	userInfo, err := userView.GetUserInfo()
 	if err != nil {
 		utils.HasError(err, "", 0)

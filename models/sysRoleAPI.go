@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"go-core-frame/global"
 )
 
@@ -35,10 +36,10 @@ func (e *SysRoleAPI) GetRoleAPI() ([]SysRoleAPI, error) {
 
 	table := global.DB.Table(e.tableName())
 
-	if e.RoleID > 0 {
-		table = table.Where("role_id = ?", e.RoleID)
+	if e.RoleID == 0 {
+		return nil, errors.New("roleId不能为空")
 	}
-
+	table = table.Where("role_id = ?", e.RoleID)
 	if e.APIID > 0 {
 		table = table.Where("api_id = ?", e.APIID)
 	}

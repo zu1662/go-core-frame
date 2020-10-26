@@ -49,14 +49,18 @@ func initBaseRouter(Router *gin.RouterGroup) {
 		BaseRouter.POST("/login", system.Login)
 		BaseRouter.GET("/captcha", system.GetCaptcha)
 		BaseRouter.POST("/logout", system.Logout)
-		BaseRouter.Use(middleware.JWTAuth()).GET("/userinfo", system.GetUserInfo)
+		BaseRouter.
+			Use(middleware.JWTAuth()).
+			Use(middleware.APIAuth()).
+			GET("/userinfo", system.GetUserInfo)
 	}
 }
 
 // InitLogRouter 操作日志路由
 func initLogRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("log").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/loginloginfo", system.GetLoginLogInfo)
 		APIRouter.GET("/loginloglist", system.GetLoginLogList)
@@ -72,7 +76,8 @@ func initLogRouter(Router *gin.RouterGroup) {
 // InitUserRouter 用户路由
 func initUserRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("user").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/info/:userId", system.GetUserDetail)
 		APIRouter.GET("/list", system.GetUserList)
@@ -87,7 +92,8 @@ func initUserRouter(Router *gin.RouterGroup) {
 // initDeptRouter 部门路由
 func initDeptRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("dept").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/info/:deptId", system.GetDeptDetail)
 		APIRouter.GET("/tree", system.GetDeptTree)
@@ -100,7 +106,8 @@ func initDeptRouter(Router *gin.RouterGroup) {
 // initPostRouter 岗位路由
 func initPostRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("post").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/info/:postId", system.GetPostDetail)
 		APIRouter.GET("/list", system.GetPostList)
@@ -114,7 +121,8 @@ func initPostRouter(Router *gin.RouterGroup) {
 // initMenuRouter 菜单路由
 func initMenuRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("menu").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/info/:menuId", system.GetMenuDetail)
 		APIRouter.GET("/tree", system.GetMenuTree)
@@ -127,7 +135,8 @@ func initMenuRouter(Router *gin.RouterGroup) {
 // initRoleRouter 角色路由
 func initRoleRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("role").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/info/:roleId", system.GetRoleDetail)
 		APIRouter.GET("/list", system.GetRoleList)
@@ -141,7 +150,8 @@ func initRoleRouter(Router *gin.RouterGroup) {
 // initRoleMenuRouter 角色菜单路由
 func initRoleMenuRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("rolemenu").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/list", system.GetRoleMenu)
 		APIRouter.POST("/update", system.UpdateRoleMenu)
@@ -151,7 +161,8 @@ func initRoleMenuRouter(Router *gin.RouterGroup) {
 // initDicRouter 部门路由
 func initDicRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("dict").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/dicttypelist", system.GetDictTypeList)
 		APIRouter.GET("/dicttype/:dictTypeId", system.GetDictTypeDetail)
@@ -171,7 +182,8 @@ func initDicRouter(Router *gin.RouterGroup) {
 // initAPIRouter 岗位路由
 func initAPIRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("interface").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/info/:apiId", system.GetAPIDetail)
 		APIRouter.GET("/tree", system.GetAPITree)
@@ -184,7 +196,8 @@ func initAPIRouter(Router *gin.RouterGroup) {
 // initRoleAPIRouter 角色接口路由
 func initRoleAPIRouter(Router *gin.RouterGroup) {
 	APIRouter := Router.Group("roleapi").
-		Use(middleware.JWTAuth())
+		Use(middleware.JWTAuth()).
+		Use(middleware.APIAuth())
 	{
 		APIRouter.GET("/list", system.GetRoleAPI)
 		APIRouter.POST("/update", system.UpdateRoleAPI)

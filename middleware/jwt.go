@@ -60,7 +60,6 @@ func JWTAuth() gin.HandlerFunc {
 
 		// 设置 UserClaims 便于 后续 使用
 		c.Set("claims", claims.UserClaims)
-		c.Set("username", claims.UserClaims.Usercode)
 
 		c.Next()
 	}

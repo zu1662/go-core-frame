@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"errors"
-	"go-core-frame/global"
 	"go-core-frame/pkg/config"
 	"time"
 
@@ -104,8 +103,8 @@ func (j *JWT) CreateToken(userClaims *UserClaims) (*Token, error) {
 		Expire: claims.StandardClaims.ExpiresAt,
 	}
 
-	// 把 User信息 存储在redis内
-	err = global.Redis.Set(token, userClaims, time.Duration(j.Timeout)*time.Second).Err()
+	// // 把 User信息 存储在redis内
+	// err = global.Redis.Set(token, userClaims, time.Duration(j.Timeout)*time.Second).Err()
 
 	return nowToken, err
 }

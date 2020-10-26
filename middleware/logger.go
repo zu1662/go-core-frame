@@ -84,8 +84,12 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 	userClaims := utils.GetUserClaims(c)
 
 	if strings.Contains(reqURI, "/login") {
+		username, ok := c.Get("username")
+		if !ok {
+			username = "_"
+		}
 		loginLog := models.LoginLog{}
-		loginLog.UserName = userClaims.Username
+		loginLog.UserName = username.(string)
 		loginLog.IPAddress = clientIP
 		loginLog.IPLocation = ipLocation
 		loginLog.Browser, _ = ua.Browser()
