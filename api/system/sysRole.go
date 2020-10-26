@@ -147,11 +147,9 @@ func UpdateRole(c *gin.Context) {
 		utils.HasError(err, "", 0)
 	}
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	result, err := data.UpdateRole()
@@ -192,13 +190,11 @@ func InsertRole(c *gin.Context) {
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.CreateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.CreateBy = userClaims.Username
 	data.CreateTime = utils.GetCurrentTime()
-	data.UpdateBy = username.(string)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	id, err := data.InsertRole()
@@ -230,11 +226,9 @@ func DeleteRole(c *gin.Context) {
 	roleIds := utils.IdsStrToIdsIntGroup(idsStr)
 
 	var data models.SysRole
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 
 	err := data.DeleteRole(roleIds)
 	utils.HasError(err, "删除失败", 0)

@@ -31,9 +31,9 @@ func JWTAuth() gin.HandlerFunc {
 		}
 
 		// 从redis获取用户信息
-		userJSON, _ := global.Redis.Get(token).Result()
-		var userClaims models.UserClaims
-		userClaims.UnmarshalBinary([]byte(userJSON))
+		// userJSON, _ := global.Redis.Get(token).Result()
+		// var userClaims models.UserClaims
+		// userClaims.UnmarshalBinary([]byte(userJSON))
 
 		j := models.NewJWT()
 		claims, err := j.ParseToken(token)
@@ -58,7 +58,8 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 设置 username 便于 logger 使用
+		// 设置 UserClaims 便于 后续 使用
+		c.Set("claims", claims.UserClaims)
 		c.Set("username", claims.UserClaims.Usercode)
 
 		c.Next()

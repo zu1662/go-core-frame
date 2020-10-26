@@ -51,11 +51,9 @@ func UpdateAPI(c *gin.Context) {
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	result, err := data.UpdateAPI()
@@ -80,13 +78,11 @@ func InsertAPI(c *gin.Context) {
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.CreateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.CreateBy = userClaims.Username
 	data.CreateTime = utils.GetCurrentTime()
-	data.UpdateBy = username.(string)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	id, err := data.InsertAPI()
@@ -105,11 +101,9 @@ func DeleteAPI(c *gin.Context) {
 
 	var data models.SysAPI
 	data.ID = ID
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 
 	err := data.DeleteAPI()
 	utils.HasError(err, "删除失败", 0)

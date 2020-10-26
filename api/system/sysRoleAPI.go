@@ -64,13 +64,11 @@ func UpdateRoleAPI(c *gin.Context) {
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.CreateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.CreateBy = userClaims.Username
 	data.CreateTime = utils.GetCurrentTime()
-	data.UpdateBy = username.(string)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	err = data.UpdateRoleAPI()

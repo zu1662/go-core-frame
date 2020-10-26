@@ -123,11 +123,9 @@ func UpdateUser(c *gin.Context) {
 		utils.HasError(err, "", 0)
 	}
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	result, err := data.UpdateUser()
@@ -158,11 +156,9 @@ func ResetUserPsw(c *gin.Context) {
 	// 用户密码 再次加密
 	data.Password = utils.GetSHA256HashCode([]byte(data.Password))
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	result, err := data.UpdateUser()
@@ -188,13 +184,11 @@ func InsertUser(c *gin.Context) {
 	errValidate := utils.StructValidate(sysuser)
 	utils.HasError(errValidate, "", 0)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	sysuser.CreateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	sysuser.CreateBy = userClaims.Username
 	sysuser.CreateTime = utils.GetCurrentTime()
-	sysuser.UpdateBy = username.(string)
+	sysuser.UpdateBy = userClaims.Username
 	sysuser.UpdateTime = utils.GetCurrentTime()
 
 	// 生成用户 uuid
@@ -227,11 +221,9 @@ func DeleteUser(c *gin.Context) {
 	var data models.SysUser
 	userIds := utils.IdsStrToIdsIntGroup(idsStr)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 
 	err := data.DeleteUser(userIds)
 	utils.HasError(err, "删除失败", 0)

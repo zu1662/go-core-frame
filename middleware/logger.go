@@ -81,14 +81,11 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 	json.Unmarshal([]byte(writer.body.String()), &response)
 
 	// 获取当前用户信息
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
+	userClaims := utils.GetUserClaims(c)
 
 	if strings.Contains(reqURI, "/login") {
 		loginLog := models.LoginLog{}
-		loginLog.UserName = username.(string)
+		loginLog.UserName = userClaims.Username
 		loginLog.IPAddress = clientIP
 		loginLog.IPLocation = ipLocation
 		loginLog.Browser, _ = ua.Browser()
@@ -106,7 +103,7 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 		operLog := models.OperLog{}
 		operLog.IPAddress = clientIP
 		operLog.IPLocation = ipLocation
-		operLog.OperName = username.(string)
+		operLog.OperName = userClaims.Username
 		operLog.Method = reqMethod
 		operLog.Path = reqURI
 		operLog.LatencyTime = (latencyTime).String()

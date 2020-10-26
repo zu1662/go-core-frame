@@ -2,10 +2,8 @@ package middleware
 
 import (
 	"errors"
-	"go-core-frame/global"
 	"go-core-frame/models"
 	"go-core-frame/pkg/app"
-	"go-core-frame/pkg/config"
 	"go-core-frame/utils"
 	"strings"
 
@@ -15,12 +13,9 @@ import (
 // APIAuth api权限校验
 func APIAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.Request.Header.Get(config.JWTConfig.HeaderName)
 
-		// 从redis获取用户信息
-		userJSON, _ := global.Redis.Get(token).Result()
-		var userClaims models.UserClaims
-		userClaims.UnmarshalBinary([]byte(userJSON))
+		// 获取用户信息
+		userClaims := utils.GetUserClaims(c)
 
 		// 请求方式
 		reqMethod := c.Request.Method

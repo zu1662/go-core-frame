@@ -105,11 +105,9 @@ func UpdateDictData(c *gin.Context) {
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	result, err := data.UpdateDictData()
@@ -134,13 +132,11 @@ func InsertDictData(c *gin.Context) {
 	errValidate := utils.StructValidate(data)
 	utils.HasError(errValidate, "", 0)
 
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.CreateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.CreateBy = userClaims.Username
 	data.CreateTime = utils.GetCurrentTime()
-	data.UpdateBy = username.(string)
+	data.UpdateBy = userClaims.Username
 	data.UpdateTime = utils.GetCurrentTime()
 
 	id, err := data.InsertDictData()
@@ -163,11 +159,9 @@ func DeleteDictData(c *gin.Context) {
 
 	dictDataIds := utils.IdsStrToIdsIntGroup(idsStr)
 	var data models.SysDictData
-	username, ok := c.Get("username")
-	if !ok {
-		username = "-"
-	}
-	data.UpdateBy = username.(string)
+// 获取用户信息
+	userClaims := utils.GetUserClaims(c)
+	data.UpdateBy = userClaims.Username
 
 	err := data.DeleteDictData(dictDataIds)
 	utils.HasError(err, "删除失败", 0)

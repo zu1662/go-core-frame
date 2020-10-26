@@ -126,10 +126,10 @@ func Logout(c *gin.Context) {
 // @Router /base/getuserinfo [get]
 // @Security Authorization
 func GetUserInfo(c *gin.Context) {
-	username, _ := c.Get("username")
+	userClaims := utils.GetUserClaims(c)
 
 	userView := models.SysUserInfo{}
-	userView.UserCode = username.(string)
+	userView.UserCode = userClaims.Username
 	userInfo, err := userView.GetUserInfo()
 	if err != nil {
 		utils.HasError(err, "", 0)
