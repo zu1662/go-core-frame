@@ -8,6 +8,7 @@ import (
 	"go-core-frame/pkg/app"
 	"go-core-frame/pkg/config"
 	"go-core-frame/utils"
+	"io/ioutil"
 	"strings"
 	"time"
 
@@ -18,8 +19,15 @@ import (
 // SetLogger 日志记录中间件
 func SetLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 开始时间
-		startTime := time.Now()
+
+		// 获取 Request Body 信息
+		var bodyParams []byte
+		bodyParams, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			global.Logger.Fatal(" Read body from request error: ", err)
+		} else if bodyParams != nil {
+			c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyParams))
+		}
 
 		// 把 后续处理的 response body 信息储存
 		writer := responseBodyWriter{
@@ -28,6 +36,8 @@ func SetLogger() gin.HandlerFunc {
 		}
 		c.Writer = writer
 
+		// 开始时间
+		startTime := time.Now()
 		// 处理请求
 		c.Next()
 
@@ -65,18 +75,19 @@ func SetLogger() gin.HandlerFunc {
 		if c.Request.Method != "GET" && c.Request.Method != "OPTIONS" {
 			// 如果配置开启了保存在数据库
 			if config.LoggerConfig.EnabledDB {
-				LoggerToDB(c, clientIP, statusCode, reqURI, reqMethod, latencyTime, writer)
+				LoggerToDB(c, clientIP, statusCode, reqURI, reqMethod, latencyTime, writer, string(bodyParams))
 			}
 		}
 	}
 }
 
 // LoggerToDB 保存请求日志到数据库
-func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, reqMethod string, latencyTime time.Duration, writer responseBodyWriter) {
+func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, reqMethod string, latencyTime time.Duration, writer responseBodyWriter, params string) {
 
 	ipLocation := utils.GetLocation(clientIP)
 	ua := user_agent.New(c.Request.Header.Get("User-Agent"))
 
+	// 返回的 信息
 	var response app.Response
 	json.Unmarshal([]byte(writer.body.String()), &response)
 
@@ -84,10 +95,12 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 	userClaims := utils.GetUserClaims(c)
 
 	if strings.Contains(reqURI, "/login") {
+		// 用户登录时，暂无 token 信息，设置的获取 username 信息
 		username, ok := c.Get("username")
 		if !ok {
 			username = "_"
 		}
+
 		loginLog := models.LoginLog{}
 		loginLog.UserName = username.(string)
 		loginLog.IPAddress = clientIP
@@ -99,11 +112,6 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 
 		loginLog.Create()
 	} else {
-		api := models.SysAPI{}
-		api.Path = strings.TrimLeft(reqURI, "/v1")
-		api.Method = reqMethod
-		nowAPI, apiErr := api.GetAPI()
-
 		operLog := models.OperLog{}
 		operLog.IPAddress = clientIP
 		operLog.IPLocation = ipLocation
@@ -114,10 +122,16 @@ func LoggerToDB(c *gin.Context, clientIP string, statusCode int, reqURI string, 
 		operLog.Browser, _ = ua.Browser()
 		operLog.OS = ua.OS()
 		operLog.Result = response.Msg
+		operLog.Response = writer.body.String()
 		operLog.OperTime = utils.GetCurrentTime()
 
-		body, _ := c.Get("body")
-		operLog.Params, _ = utils.StructToJsonStr(body)
+		operLog.Params = params
+
+		// 获取 API Title
+		api := models.SysAPI{}
+		api.Path = strings.TrimLeft(reqURI, "/v1")
+		api.Method = reqMethod
+		nowAPI, apiErr := api.GetAPI()
 
 		if apiErr == nil {
 			operLog.OperTitle = nowAPI.Name

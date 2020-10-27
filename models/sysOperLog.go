@@ -20,6 +20,7 @@ type OperLog struct {
 	Browser     string    `json:"browser"`     // 浏览器
 	OS          string    `json:"os"`          // 操作系统
 	Result      string    `json:"result"`      // 操作结果
+	Response    string    `json:"response"`    // 返回数据
 	OperTime    time.Time `json:"operTime"`    // 操作时间
 }
 
