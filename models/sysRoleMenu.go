@@ -18,6 +18,8 @@ type SysRoleMenuView struct {
 	MenuList []int `json:"menuList" valid:"required"` // 菜单ID
 	BaseModel
 }
+
+// MenuIdList MenuIdList 结构
 type MenuIdList struct {
 	MenuId int `json:"menuId"`
 }

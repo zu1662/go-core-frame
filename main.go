@@ -76,5 +76,7 @@ func setup() {
 	database.MysqlSetup()
 
 	// Redis初始化
-	database.RedisSetup()
+	if config.ApplicationConfig.EnableRedis {
+		database.RedisSetup()
+	}
 }

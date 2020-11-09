@@ -15,6 +15,7 @@ type Application struct {
 	Name          string
 	Mode          string
 	EnableDP      bool
+	EnableRedis   bool
 }
 
 // InitApplication get config
@@ -28,5 +29,6 @@ func InitApplication(cfg *viper.Viper) *Application {
 		Name:          cfg.GetString("name"),
 		Mode:          cfg.GetString("mode"),
 		EnableDP:      cfg.GetBool("enabledp"),
+		EnableRedis:   cfg.GetBool("enableredis"),
 	}
 }

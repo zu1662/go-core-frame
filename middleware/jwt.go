@@ -23,11 +23,13 @@ func JWTAuth() gin.HandlerFunc {
 		}
 
 		// 获取 redis 内的 token
-		IsBlacklist, _ := global.Redis.SIsMember("tokenBlock", token).Result()
-		if IsBlacklist {
-			app.WithCode(c, 401, models.ErrTokenEmpty, "您的帐户异地登陆或令牌失效")
-			c.Abort()
-			return
+		if config.ApplicationConfig.EnableRedis {
+			IsBlacklist, _ := global.Redis.SIsMember("tokenBlock", token).Result()
+			if IsBlacklist {
+				app.WithCode(c, 401, models.ErrTokenEmpty, "您的帐户异地登陆或令牌失效")
+				c.Abort()
+				return
+			}
 		}
 
 		// 从redis获取用户信息

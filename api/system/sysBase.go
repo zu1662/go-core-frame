@@ -107,9 +107,11 @@ func Logout(c *gin.Context) {
 
 	token := c.Request.Header.Get(config.JWTConfig.HeaderName)
 
-	err := global.Redis.SAdd("tokenBlock", token).Err()
-	if err != nil {
-		utils.HasError(err, "退出失败", 0)
+	if config.ApplicationConfig.EnableRedis {
+		err := global.Redis.SAdd("tokenBlock", token).Err()
+		if err != nil {
+			utils.HasError(err, "退出失败", 0)
+		}
 	}
 
 	app.Custom(c, gin.H{
